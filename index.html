@@ -1,591 +1,597 @@
-import React from "react";
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  ResponsiveContainer
-} from "recharts";
-
-import {
-  Factory,
-  Package,
-  Truck,
-  ClipboardCheck,
-  AlertTriangle,
-  Boxes
-} from "lucide-react";
-
-
-export default function App() {
-
-
-const kpiData = [
-{
-title:"Total PO",
-value:"125",
-icon:<Package/>
-},
-{
-title:"Active RC",
-value:"98",
-icon:<ClipboardCheck/>
-},
-{
-title:"Production Qty",
-value:"8500",
-icon:<Factory/>
-},
-{
-title:"FG Ready",
-value:"7200",
-icon:<Boxes/>
-},
-{
-title:"Dispatch Qty",
-value:"6500",
-icon:<Truck/>
-},
-{
-title:"Open NCR",
-value:"12",
-icon:<AlertTriangle/>
-}
-
-];
-
-
-
-const customerData=[
-
-{
-customer:"HAL",
-PO:5000,
-Production:4200,
-Dispatch:3500
-},
-
-{
-customer:"ASACO",
-PO:2500,
-Production:1800,
-Dispatch:1500
-},
-
-{
-customer:"Customer-3",
-PO:2000,
-Production:1600,
-Dispatch:1200
-}
-
-];
-
-
-
-const wipData=[
-
-{
-stage:"Material Issue",
-qty:10000
-},
-
-{
-stage:"Machining",
-qty:8500
-},
-
-{
-stage:"Deburring",
-qty:8200
-},
-
-{
-stage:"Inspection",
-qty:7800
-},
-
-{
-stage:"FG",
-qty:7200
-},
-
-{
-stage:"Dispatch",
-qty:6500
-}
-
-];
-
-
-
-const qualityData=[
-
-{
-month:"Jan",
-Supplier:20,
-Machining:15,
-Customer:2
-},
-
-{
-month:"Feb",
-Supplier:12,
-Machining:10,
-Customer:1
-},
-
-{
-month:"Mar",
-Supplier:8,
-Machining:6,
-Customer:0
-},
-
-{
-month:"Apr",
-Supplier:5,
-Machining:4,
-Customer:0
-}
-
-];
-
-
-
-const ncrData=[
-
-{
-name:"Open",
-value:12
-},
-
-{
-name:"Closed",
-value:45
-},
-
-{
-name:"Pending",
-value:5
-}
-
-];
-
-
-
-const review=[
-
-{
-kpi:"On Time Delivery",
-target:"≥95%",
-actual:"92%",
-status:"Need Action"
-},
-
-{
-kpi:"FPY",
-target:"≥98%",
-actual:"97%",
-status:"Monitor"
-},
-
-{
-kpi:"Supplier Rejection",
-target:"<2%",
-actual:"1.5%",
-status:"OK"
-},
-
-{
-kpi:"NCR Closure",
-target:"≤30 Days",
-actual:"25 Days",
-status:"OK"
-}
-
-];
-
-
-
-return (
-
-<div style={{
-padding:"25px",
-background:"#f4f6f8",
-minHeight:"100vh",
-fontFamily:"Arial"
-}}>
-
-
-<h1>
-GMPL Aerospace Manufacturing ERP Dashboard
-</h1>
-
-
-<p>
-Plant : Adibatla | Department : Management
-</p>
-
-
-
-{/* KPI CARDS */}
-
-
-<div style={{
-display:"grid",
-gridTemplateColumns:"repeat(6,1fr)",
-gap:"15px",
-marginTop:"20px"
-}}>
-
-
-{
-kpiData.map((k)=>(
-
-<div style={{
-background:"white",
-padding:"20px",
-borderRadius:"12px",
-boxShadow:"0 2px 5px #ccc"
-}}>
-
-
-<div>
-{k.icon}
-</div>
-
-
-<h3>
-{k.title}
-</h3>
-
-
-<h1>
-{k.value}
-</h1>
-
-
-</div>
-
-))
-
-}
-
-</div>
-
-
-
-
-{/* CUSTOMER STATUS */}
-
-
-<div style={{
-background:"white",
-marginTop:"30px",
-padding:"20px",
-borderRadius:"12px"
-}}>
-
-
-<h2>
-Customer Order Status
-</h2>
-
-
-<ResponsiveContainer width="100%" height={350}>
-
-
-<BarChart data={customerData}>
-
-
-<XAxis dataKey="customer"/>
-
-<YAxis/>
-
-<Tooltip/>
-
-<Legend/>
-
-
-<Bar dataKey="PO"/>
-
-<Bar dataKey="Production"/>
-
-<Bar dataKey="Dispatch"/>
-
-
-</BarChart>
-
-
-</ResponsiveContainer>
-
-
-</div>
-
-
-
-
-
-{/* WIP FLOW */}
-
-
-<div style={{
-background:"white",
-marginTop:"30px",
-padding:"20px",
-borderRadius:"12px"
-}}>
-
-
-<h2>
-Production WIP Flow
-</h2>
-
-
-{
-
-wipData.map((w)=>(
-
-<div style={{
-margin:"15px 0"
-}}>
-
-
-<b>
-{w.stage} : {w.qty}
-</b>
-
-
-<div style={{
-background:"#ddd",
-height:"20px",
-borderRadius:"10px"
-}}>
-
-
-<div style={{
-
-width:(w.qty/10000*100)+"%",
-height:"20px",
-background:"#4caf50",
-borderRadius:"10px"
-
-}}>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-))
-
-}
-
-
-</div>
-
-
-
-
-
-{/* QUALITY TREND */}
-
-
-<div style={{
-background:"white",
-marginTop:"30px",
-padding:"20px",
-borderRadius:"12px"
-}}>
-
-
-<h2>
-Quality Rejection Trend
-</h2>
-
-
-<ResponsiveContainer width="100%" height={300}>
-
-
-<LineChart data={qualityData}>
-
-
-<XAxis dataKey="month"/>
-
-<YAxis/>
-
-<Tooltip/>
-
-<Legend/>
-
-
-<Line dataKey="Supplier"/>
-
-<Line dataKey="Machining"/>
-
-<Line dataKey="Customer"/>
-
-
-</LineChart>
-
-
-</ResponsiveContainer>
-
-
-</div>
-
-
-
-
-
-
-{/* NCR */}
-
-
-<div style={{
-background:"white",
-marginTop:"30px",
-padding:"20px",
-borderRadius:"12px"
-}}>
-
-
-<h2>
-NCR Status
-</h2>
-
-
-<ResponsiveContainer width="100%" height={250}>
-
-
-<PieChart>
-
-
-<Pie
-data={ncrData}
-dataKey="value"
-nameKey="name"
-outerRadius={90}
-label
->
-
-
-{
-ncrData.map((entry,index)=>(
-
-<Cell key={index}/>
-
-))
-
-}
-
-
-</Pie>
-
-
-<Tooltip/>
-
-</PieChart>
-
-
-</ResponsiveContainer>
-
-
-</div>
-
-
-
-
-
-
-
-{/* MANAGEMENT REVIEW */}
-
-
-
-<div style={{
-background:"white",
-marginTop:"30px",
-padding:"20px",
-borderRadius:"12px"
-}}>
-
-
-<h2>
-Management Review KPI
-</h2>
-
-
-<table width="100%" border="1" cellPadding="10">
-
-
-<thead>
-
-<tr>
-
-<th>KPI</th>
-
-<th>Target</th>
-
-<th>Actual</th>
-
-<th>Status</th>
-
-</tr>
-
-</thead>
-
-
-
-<tbody>
-
-
-{
-review.map(r=>(
-
-<tr>
-
-<td>{r.kpi}</td>
-
-<td>{r.target}</td>
-
-<td>{r.actual}</td>
-
-<td>{r.status}</td>
-
-</tr>
-
-
-))
-
-}
-
-
-</tbody>
-
-
-</table>
-
-
-</div>
-
-
-
-</div>
-
-);
-
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Renewable Tracker | Management Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --blue: #3b82f6;
+      --green: #22c55e;
+      --red: #ef4444;
+      --orange: #f97316;
+      --yellow: #eab308;
+      --purple: #8b5cf6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar h1 { font-size: 20px; font-weight: 700; }
+    .topbar .badge-live {
+      background: #dcfce7;
+      color: #166534;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    nav {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+    }
+    nav button {
+      background: none;
+      border: none;
+      padding: 14px 18px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      white-space: nowrap;
+    }
+    nav button:hover { color: var(--text); }
+    nav button.active {
+      color: var(--blue);
+      border-bottom-color: var(--blue);
+    }
+    .content { padding: 24px; max-width: 1400px; margin: 0 auto; }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .kpi {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      position: relative;
+    }
+    .kpi .label { font-size: 12px; color: var(--muted); font-weight: 500; }
+    .kpi .value { font-size: 26px; font-weight: 700; margin-top: 4px; }
+    .kpi .trend { font-size: 11px; margin-top: 4px; }
+    .kpi.red .value { color: var(--red); }
+    .kpi.green .value { color: var(--green); }
+    .kpi.orange .value { color: var(--orange); }
+    .kpi.blue .value { color: var(--blue); }
+    .kpi.purple .value { color: var(--purple); }
+    .kpi.yellow .value { color: #ca8a04; }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 28px 0 14px;
+      color: #1e293b;
+    }
+    .charts-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .chart-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+    .chart-card h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .chart-box { height: 240px; position: relative; }
+
+    .table-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .table-card h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th {
+      background: #f8fafc;
+      padding: 11px 16px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    td { padding: 11px 16px; border-top: 1px solid var(--border); }
+    .badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-red { background: #fee2e2; color: #b91c1c; }
+    .badge-orange { background: #ffedd5; color: #c2410c; }
+    .badge-green { background: #dcfce7; color: #15803d; }
+    .badge-yellow { background: #fef9c3; color: #a16207; }
+    .badge-blue { background: #dbeafe; color: #1d4ed8; }
+
+    .note {
+      background: #eff6ff;
+      border-left: 4px solid var(--blue);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      font-size: 13px;
+      color: #1e40af;
+      margin-bottom: 20px;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div>
+      <h1>Renewable Tracker</h1>
+      <div style="font-size:12px;color:#64748b;">Phase 1 • Management | Quality | Production | PO</div>
+    </div>
+    <div class="badge-live">● Live</div>
+  </div>
+
+  <nav>
+    <button class="active" data-page="management">Management</button>
+    <button data-page="quality">Quality Gate</button>
+    <button data-page="production">Production</button>
+    <button data-page="po">PO Tracker</button>
+  </nav>
+
+  <div class="content">
+
+    <!-- ===================== MANAGEMENT ===================== -->
+    <div id="management" class="page active">
+      <div class="note">
+        Executive overview of factory health. Real data from Quality Gate + PO Tracker is shown. Other metrics use current known values / placeholders until full live extraction is ready.
+      </div>
+
+      <div class="section-title">A. Business Overview</div>
+      <div class="kpi-grid">
+        <div class="kpi blue"><div class="label">Total PO Received</div><div class="value">1+</div></div>
+        <div class="kpi"><div class="label">Total RC Released</div><div class="value">0</div></div>
+        <div class="kpi"><div class="label">Active Production Orders</div><div class="value">68</div></div>
+        <div class="kpi"><div class="label">Total Customers</div><div class="value">3</div></div>
+        <div class="kpi"><div class="label">Parts in System</div><div class="value">5+</div></div>
+        <div class="kpi red"><div class="label">RCs Blocked</div><div class="value">68</div></div>
+      </div>
+
+      <div class="section-title">B. Material Overview</div>
+      <div class="kpi-grid">
+        <div class="kpi blue"><div class="label">Incoming Qty (sample)</div><div class="value">–</div></div>
+        <div class="kpi green"><div class="label">Accepted Qty</div><div class="value">–</div></div>
+        <div class="kpi orange"><div class="label">Material Under Production</div><div class="value">High</div></div>
+        <div class="kpi"><div class="label">Material Pending</div><div class="value">–</div></div>
+        <div class="kpi yellow"><div class="label">Material Size Review</div><div class="value">54</div></div>
+      </div>
+
+      <div class="section-title">C. Production Overview</div>
+      <div class="kpi-grid">
+        <div class="kpi red"><div class="label">Production Incomplete</div><div class="value">58</div></div>
+        <div class="kpi orange"><div class="label">Drawing Revision Block</div><div class="value">5</div></div>
+        <div class="kpi yellow"><div class="label">Duplicate Key</div><div class="value">4</div></div>
+        <div class="kpi purple"><div class="label">CoC Missing</div><div class="value">1</div></div>
+      </div>
+
+      <div class="section-title">D. Quality Overview</div>
+      <div class="kpi-grid">
+        <div class="kpi red"><div class="label">Open NCR RCs</div><div class="value">20</div></div>
+        <div class="kpi orange"><div class="label">RED Data Health</div><div class="value">9</div></div>
+        <div class="kpi yellow"><div class="label">FAIR Missing</div><div class="value">9</div></div>
+        <div class="kpi"><div class="label">NCR without CAPA</div><div class="value">41</div></div>
+        <div class="kpi"><div class="label">FG without CoC</div><div class="value">31</div></div>
+      </div>
+
+      <div class="section-title">E. Dispatch Overview</div>
+      <div class="kpi-grid">
+        <div class="kpi red"><div class="label">Dispatch Blocked</div><div class="value">68</div></div>
+        <div class="kpi green"><div class="label">RCs Released</div><div class="value">0</div></div>
+        <div class="kpi"><div class="label">Ready for Dispatch</div><div class="value">0</div></div>
+        <div class="kpi blue"><div class="label">Dispatched (sample)</div><div class="value">9</div></div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <h3>Release Gate Status</h3>
+          <div class="chart-box"><canvas id="mgmtDonut"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Blocking Reasons</h3>
+          <div class="chart-box"><canvas id="mgmtBar"></canvas></div>
+        </div>
+      </div>
+
+      <div class="section-title">G. Executive Decision Indicators</div>
+      <div class="table-card">
+        <h3>Immediate Attention Required</h3>
+        <table>
+          <thead>
+            <tr><th>Issue</th><th>Count</th><th>Impact</th><th>Owner</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>RCs Blocked – Production Incomplete</td><td>58</td><td><span class="badge badge-red">High</span></td><td>Production</td></tr>
+            <tr><td>Open NCR blocking dispatch</td><td>20</td><td><span class="badge badge-red">High</span></td><td>Quality</td></tr>
+            <tr><td>FG quantity without CoC</td><td>31</td><td><span class="badge badge-orange">Medium</span></td><td>Quality / Dispatch</td></tr>
+            <tr><td>FAIR required but missing</td><td>9</td><td><span class="badge badge-orange">Medium</span></td><td>Quality</td></tr>
+            <tr><td>Drawing revision mismatches</td><td>5</td><td><span class="badge badge-yellow">Medium</span></td><td>Engineering</td></tr>
+            <tr><td>Material size requiring review</td><td>54</td><td><span class="badge badge-yellow">Low</span></td><td>Incoming Quality</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===================== QUALITY GATE ===================== -->
+    <div id="quality" class="page">
+      <div class="kpi-grid">
+        <div class="kpi red"><div class="label">RCs Blocked</div><div class="value">68</div></div>
+        <div class="kpi green"><div class="label">RCs Released</div><div class="value">0</div></div>
+        <div class="kpi orange"><div class="label">RED Data Health</div><div class="value">9</div></div>
+        <div class="kpi yellow"><div class="label">Open NCR RCs</div><div class="value">20</div></div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <h3>Final Gate Status</h3>
+          <div class="chart-box"><canvas id="qualDonut"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Top Blocking Reasons</h3>
+          <div class="chart-box"><canvas id="qualBar"></canvas></div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <h3>Blocked RCs – Release Action List</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>RC No</th>
+              <th>Part No</th>
+              <th>PO No</th>
+              <th>Final Gate / Reason</th>
+              <th>KPI Confidence</th>
+              <th>FAIR Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>RC-AERO-2605-146</strong></td>
+              <td>20-104483</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>REVIEW REQUIREMENT</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2605-147</strong></td>
+              <td>20-104483</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>REVIEW REQUIREMENT</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2607-338</strong></td>
+              <td>20-104483</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>MISSING</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2607-366</strong></td>
+              <td>20-104483</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">COC MISSING</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>REVIEW REQUIREMENT</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2607-340</strong></td>
+              <td>20-104355</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>MISSING</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2608-381</strong></td>
+              <td>20-104355</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>MISSING</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===================== PRODUCTION ===================== -->
+    <div id="production" class="page">
+      <div class="kpi-grid">
+        <div class="kpi red"><div class="label">Production Incomplete</div><div class="value">58</div></div>
+        <div class="kpi orange"><div class="label">Drawing Revision</div><div class="value">5</div></div>
+        <div class="kpi yellow"><div class="label">Duplicate Key</div><div class="value">4</div></div>
+        <div class="kpi purple"><div class="label">CoC Missing</div><div class="value">1</div></div>
+        <div class="kpi blue"><div class="label">Total Blocked RCs</div><div class="value">68</div></div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <h3>Blocking Reasons Distribution</h3>
+          <div class="chart-box"><canvas id="prodDonut"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Blocking Reasons Count</h3>
+          <div class="chart-box"><canvas id="prodBar"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== PO TRACKER ===================== -->
+    <div id="po" class="page">
+      <div class="kpi-grid">
+        <div class="kpi blue"><div class="label">Active PO</div><div class="value">PO26645</div></div>
+        <div class="kpi red"><div class="label">Lines Blocked by NCR</div><div class="value">3</div></div>
+        <div class="kpi green"><div class="label">Dispatched Qty</div><div class="value">9</div></div>
+        <div class="kpi"><div class="label">Customer</div><div class="value">EPC POWER</div></div>
+      </div>
+
+      <div class="table-card">
+        <h3>PO26645 – Live Status</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Part No</th>
+              <th>Part Name</th>
+              <th>PO Qty</th>
+              <th>Dispatched</th>
+              <th>Open NCR</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>20-104355</td>
+              <td>CAST END, LEFT SIDE - M</td>
+              <td>3</td>
+              <td>3</td>
+              <td>12</td>
+              <td><span class="badge badge-red">BLOCK - OPEN NCR</span></td>
+            </tr>
+            <tr>
+              <td>20-104356</td>
+              <td>CAST PIECE, RIGHT SIDE - M</td>
+              <td>3</td>
+              <td>3</td>
+              <td>11</td>
+              <td><span class="badge badge-red">BLOCK - OPEN NCR</span></td>
+            </tr>
+            <tr>
+              <td>20-104483</td>
+              <td>ENCLOSURE, CAST BOTTOM, FOOT - M</td>
+              <td>3</td>
+              <td>3</td>
+              <td>15</td>
+              <td><span class="badge badge-red">BLOCK - OPEN NCR</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note" style="margin-top:20px;">
+        Dispatch is automatically blocked when Open NCR exists. Clear NCRs and complete production to move status to Ready for Dispatch / Completed.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    Renewable Tracker • Phase 1 Dashboard • Connected to Google Sheets • Deployed on Vercel
+  </div>
+
+  <script>
+    // Tab navigation
+    document.querySelectorAll('nav button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.page).classList.add('active');
+      });
+    });
+
+    // Charts
+    Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+    Chart.defaults.color = '#64748b';
+
+    // Management Donut
+    new Chart(document.getElementById('mgmtDonut'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Blocked (68)', 'Released (0)'],
+        datasets: [{
+          data: [68, 0],
+          backgroundColor: ['#ef4444', '#22c55e'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom' } },
+        cutout: '70%'
+      }
+    });
+
+    // Management Bar
+    new Chart(document.getElementById('mgmtBar'), {
+      type: 'bar',
+      data: {
+        labels: ['Prod Incomplete', 'Drawing Rev', 'Duplicate', 'CoC Missing'],
+        datasets: [{
+          data: [58, 5, 4, 1],
+          backgroundColor: ['#ef4444', '#f97316', '#eab308', '#8b5cf6'],
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#e2e8f0' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    // Quality Donut
+    new Chart(document.getElementById('qualDonut'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Blocked', 'Released'],
+        datasets: [{
+          data: [68, 0],
+          backgroundColor: ['#ef4444', '#22c55e'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom' } },
+        cutout: '70%'
+      }
+    });
+
+    // Quality Bar
+    new Chart(document.getElementById('qualBar'), {
+      type: 'bar',
+      data: {
+        labels: ['Prod Incomplete', 'Drawing Rev', 'Duplicate', 'CoC Missing'],
+        datasets: [{
+          data: [58, 5, 4, 1],
+          backgroundColor: ['#ef4444', '#f97316', '#eab308', '#8b5cf6'],
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#e2e8f0' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    // Production Donut
+    new Chart(document.getElementById('prodDonut'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Prod Incomplete', 'Drawing Rev', 'Duplicate', 'CoC Missing'],
+        datasets: [{
+          data: [58, 5, 4, 1],
+          backgroundColor: ['#ef4444', '#f97316', '#eab308', '#8b5cf6'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } },
+        cutout: '65%'
+      }
+    });
+
+    // Production Bar
+    new Chart(document.getElementById('prodBar'), {
+      type: 'bar',
+      data: {
+        labels: ['Prod Incomplete', 'Drawing Rev', 'Duplicate', 'CoC Missing'],
+        datasets: [{
+          data: [58, 5, 4, 1],
+          backgroundColor: '#3b82f6',
+          borderRadius: 6
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { beginAtZero: true, grid: { color: '#e2e8f0' } },
+          y: { grid: { display: false } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
