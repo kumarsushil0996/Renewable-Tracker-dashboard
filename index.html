@@ -3,141 +3,129 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Renewable Tracker | Executive Dashboard</title>
+  <title>Renewable Tracker | Management Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --border: #334155;
-      --text: #f1f5f9;
-      --muted: #94a3b8;
-      --accent: #3b82f6;
-      --red: #ef4444;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --blue: #3b82f6;
       --green: #22c55e;
+      --red: #ef4444;
       --orange: #f97316;
       --yellow: #eab308;
-      --purple: #a855f7;
+      --purple: #8b5cf6;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
-      min-height: 100vh;
+      line-height: 1.5;
     }
-    .header {
-      background: linear-gradient(90deg, #0f172a, #1e3a5f);
-      padding: 18px 28px;
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 28px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
-    .header .sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
-    .header .live {
-      background: rgba(34,197,94,0.15);
-      color: #4ade80;
-      padding: 6px 12px;
+    .topbar h1 { font-size: 20px; font-weight: 700; }
+    .topbar .badge-live {
+      background: #dcfce7;
+      color: #166534;
+      padding: 5px 12px;
       border-radius: 20px;
       font-size: 12px;
       font-weight: 600;
     }
     nav {
-      background: #1e293b;
-      padding: 0 16px;
-      display: flex;
-      gap: 2px;
-      overflow-x: auto;
+      background: #fff;
       border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
     }
     nav button {
-      background: transparent;
+      background: none;
       border: none;
-      color: var(--muted);
       padding: 14px 18px;
-      font-size: 13.5px;
+      font-size: 14px;
       font-weight: 500;
+      color: var(--muted);
       cursor: pointer;
       border-bottom: 3px solid transparent;
       white-space: nowrap;
-      transition: all 0.2s;
     }
-    nav button:hover { color: white; }
+    nav button:hover { color: var(--text); }
     nav button.active {
-      color: white;
-      border-bottom-color: var(--accent);
-      background: rgba(59,130,246,0.08);
+      color: var(--blue);
+      border-bottom-color: var(--blue);
     }
-    .content { padding: 24px; max-width: 1500px; margin: 0 auto; }
-    .page { display: none; animation: fade 0.3s ease; }
+    .content { padding: 24px; max-width: 1400px; margin: 0 auto; }
+    .page { display: none; }
     .page.active { display: block; }
-    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 
     /* KPI Cards */
-    .kpi-row {
+    .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px;
       margin-bottom: 24px;
     }
     .kpi {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 18px 20px;
+      padding: 16px 18px;
       position: relative;
-      overflow: hidden;
     }
-    .kpi::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-    }
-    .kpi.red::before { background: var(--red); }
-    .kpi.green::before { background: var(--green); }
-    .kpi.orange::before { background: var(--orange); }
-    .kpi.yellow::before { background: var(--yellow); }
-    .kpi.blue::before { background: var(--accent); }
-    .kpi.purple::before { background: var(--purple); }
-    .kpi .label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
-    .kpi .value { font-size: 32px; font-weight: 700; margin-top: 6px; }
-    .kpi.red .value { color: #f87171; }
-    .kpi.green .value { color: #4ade80; }
-    .kpi.orange .value { color: #fb923c; }
-    .kpi.yellow .value { color: #facc15; }
-    .kpi.blue .value { color: #60a5fa; }
-    .kpi.purple .value { color: #c084fc; }
+    .kpi .label { font-size: 12px; color: var(--muted); font-weight: 500; }
+    .kpi .value { font-size: 26px; font-weight: 700; margin-top: 4px; }
+    .kpi .trend { font-size: 11px; margin-top: 4px; }
+    .kpi.red .value { color: var(--red); }
+    .kpi.green .value { color: var(--green); }
+    .kpi.orange .value { color: var(--orange); }
+    .kpi.blue .value { color: var(--blue); }
+    .kpi.purple .value { color: var(--purple); }
+    .kpi.yellow .value { color: #ca8a04; }
 
-    /* Charts layout */
-    .charts-grid {
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 28px 0 14px;
+      color: #1e293b;
+    }
+    .charts-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
       margin-bottom: 24px;
     }
     .chart-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 20px;
+      padding: 18px;
     }
     .chart-card h3 {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: var(--muted);
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       text-transform: uppercase;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.3px;
     }
-    .chart-container {
-      position: relative;
-      height: 260px;
-    }
+    .chart-box { height: 240px; position: relative; }
 
-    /* Tables */
     .table-card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -146,262 +134,328 @@
       margin-bottom: 20px;
     }
     .table-card h3 {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: var(--muted);
-      padding: 16px 20px;
+      padding: 14px 18px;
       border-bottom: 1px solid var(--border);
       text-transform: uppercase;
-      letter-spacing: 0.4px;
     }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th {
-      background: #0f172a;
-      color: var(--muted);
-      padding: 12px 16px;
+      background: #f8fafc;
+      padding: 11px 16px;
       text-align: left;
       font-weight: 600;
+      color: var(--muted);
       font-size: 12px;
       text-transform: uppercase;
     }
-    td {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--border);
-    }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(255,255,255,0.02); }
+    td { padding: 11px 16px; border-top: 1px solid var(--border); }
     .badge {
       display: inline-block;
-      padding: 3px 10px;
+      padding: 3px 9px;
       border-radius: 20px;
       font-size: 11px;
       font-weight: 600;
     }
-    .badge-red { background: rgba(239,68,68,0.15); color: #f87171; }
-    .badge-orange { background: rgba(249,115,22,0.15); color: #fb923c; }
-    .badge-yellow { background: rgba(234,179,8,0.15); color: #facc15; }
-    .badge-green { background: rgba(34,197,94,0.15); color: #4ade80; }
-    .badge-gray { background: rgba(148,163,184,0.15); color: #94a3b8; }
+    .badge-red { background: #fee2e2; color: #b91c1c; }
+    .badge-orange { background: #ffedd5; color: #c2410c; }
+    .badge-green { background: #dcfce7; color: #15803d; }
+    .badge-yellow { background: #fef9c3; color: #a16207; }
+    .badge-blue { background: #dbeafe; color: #1d4ed8; }
 
+    .note {
+      background: #eff6ff;
+      border-left: 4px solid var(--blue);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      font-size: 13px;
+      color: #1e40af;
+      margin-bottom: 20px;
+    }
     .footer {
       text-align: center;
-      padding: 24px;
-      color: var(--muted);
+      padding: 20px;
       font-size: 12px;
+      color: var(--muted);
       border-top: 1px solid var(--border);
-      margin-top: 20px;
+      margin-top: 30px;
     }
   </style>
 </head>
 <body>
 
-  <div class="header">
+  <div class="topbar">
     <div>
       <h1>Renewable Tracker</h1>
-      <div class="sub">Executive Quality & Operations Dashboard</div>
+      <div style="font-size:12px;color:#64748b;">Phase 1 • Management | Quality | Production | PO</div>
     </div>
-    <div class="live">● LIVE</div>
+    <div class="badge-live">● Live</div>
   </div>
 
   <nav>
     <button class="active" data-page="management">Management</button>
-    <button data-page="production">Production</button>
-    <button data-page="stores">Stores / Dispatch</button>
     <button data-page="quality">Quality Gate</button>
+    <button data-page="production">Production</button>
     <button data-page="po">PO Tracker</button>
-    <button data-page="trace">Material Traceability</button>
-    <button data-page="journey">Part & RC Journey</button>
   </nav>
 
   <div class="content">
 
-    <!-- ========== MANAGEMENT ========== -->
+    <!-- ===================== MANAGEMENT ===================== -->
     <div id="management" class="page active">
-      <div class="kpi-row">
+      <div class="note">
+        Executive overview of factory health. Real data from Quality Gate + PO Tracker is shown. Other metrics use current known values / placeholders until full live extraction is ready.
+      </div>
+
+      <div class="section-title">A. Business Overview</div>
+      <div class="kpi-grid">
+        <div class="kpi blue"><div class="label">Total PO Received</div><div class="value">1+</div></div>
+        <div class="kpi"><div class="label">Total RC Released</div><div class="value">0</div></div>
+        <div class="kpi"><div class="label">Active Production Orders</div><div class="value">68</div></div>
+        <div class="kpi"><div class="label">Total Customers</div><div class="value">3</div></div>
+        <div class="kpi"><div class="label">Parts in System</div><div class="value">5+</div></div>
+        <div class="kpi red"><div class="label">RCs Blocked</div><div class="value">68</div></div>
+      </div>
+
+      <div class="section-title">B. Material Overview</div>
+      <div class="kpi-grid">
+        <div class="kpi blue"><div class="label">Incoming Qty (sample)</div><div class="value">–</div></div>
+        <div class="kpi green"><div class="label">Accepted Qty</div><div class="value">–</div></div>
+        <div class="kpi orange"><div class="label">Material Under Production</div><div class="value">High</div></div>
+        <div class="kpi"><div class="label">Material Pending</div><div class="value">–</div></div>
+        <div class="kpi yellow"><div class="label">Material Size Review</div><div class="value">54</div></div>
+      </div>
+
+      <div class="section-title">C. Production Overview</div>
+      <div class="kpi-grid">
+        <div class="kpi red"><div class="label">Production Incomplete</div><div class="value">58</div></div>
+        <div class="kpi orange"><div class="label">Drawing Revision Block</div><div class="value">5</div></div>
+        <div class="kpi yellow"><div class="label">Duplicate Key</div><div class="value">4</div></div>
+        <div class="kpi purple"><div class="label">CoC Missing</div><div class="value">1</div></div>
+      </div>
+
+      <div class="section-title">D. Quality Overview</div>
+      <div class="kpi-grid">
+        <div class="kpi red"><div class="label">Open NCR RCs</div><div class="value">20</div></div>
+        <div class="kpi orange"><div class="label">RED Data Health</div><div class="value">9</div></div>
+        <div class="kpi yellow"><div class="label">FAIR Missing</div><div class="value">9</div></div>
+        <div class="kpi"><div class="label">NCR without CAPA</div><div class="value">41</div></div>
+        <div class="kpi"><div class="label">FG without CoC</div><div class="value">31</div></div>
+      </div>
+
+      <div class="section-title">E. Dispatch Overview</div>
+      <div class="kpi-grid">
+        <div class="kpi red"><div class="label">Dispatch Blocked</div><div class="value">68</div></div>
+        <div class="kpi green"><div class="label">RCs Released</div><div class="value">0</div></div>
+        <div class="kpi"><div class="label">Ready for Dispatch</div><div class="value">0</div></div>
+        <div class="kpi blue"><div class="label">Dispatched (sample)</div><div class="value">9</div></div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <h3>Release Gate Status</h3>
+          <div class="chart-box"><canvas id="mgmtDonut"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Blocking Reasons</h3>
+          <div class="chart-box"><canvas id="mgmtBar"></canvas></div>
+        </div>
+      </div>
+
+      <div class="section-title">G. Executive Decision Indicators</div>
+      <div class="table-card">
+        <h3>Immediate Attention Required</h3>
+        <table>
+          <thead>
+            <tr><th>Issue</th><th>Count</th><th>Impact</th><th>Owner</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>RCs Blocked – Production Incomplete</td><td>58</td><td><span class="badge badge-red">High</span></td><td>Production</td></tr>
+            <tr><td>Open NCR blocking dispatch</td><td>20</td><td><span class="badge badge-red">High</span></td><td>Quality</td></tr>
+            <tr><td>FG quantity without CoC</td><td>31</td><td><span class="badge badge-orange">Medium</span></td><td>Quality / Dispatch</td></tr>
+            <tr><td>FAIR required but missing</td><td>9</td><td><span class="badge badge-orange">Medium</span></td><td>Quality</td></tr>
+            <tr><td>Drawing revision mismatches</td><td>5</td><td><span class="badge badge-yellow">Medium</span></td><td>Engineering</td></tr>
+            <tr><td>Material size requiring review</td><td>54</td><td><span class="badge badge-yellow">Low</span></td><td>Incoming Quality</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===================== QUALITY GATE ===================== -->
+    <div id="quality" class="page">
+      <div class="kpi-grid">
         <div class="kpi red"><div class="label">RCs Blocked</div><div class="value">68</div></div>
         <div class="kpi green"><div class="label">RCs Released</div><div class="value">0</div></div>
         <div class="kpi orange"><div class="label">RED Data Health</div><div class="value">9</div></div>
         <div class="kpi yellow"><div class="label">Open NCR RCs</div><div class="value">20</div></div>
-        <div class="kpi blue"><div class="label">Formula Errors</div><div class="value">24</div></div>
-        <div class="kpi purple"><div class="label">FAIR Missing</div><div class="value">9</div></div>
       </div>
 
-      <div class="charts-grid">
-        <div class="chart-card">
-          <h3>Release Gate Status</h3>
-          <div class="chart-container"><canvas id="mgmtDonut"></canvas></div>
-        </div>
-        <div class="chart-card">
-          <h3>Data Health Exceptions</h3>
-          <div class="chart-container"><canvas id="mgmtBar"></canvas></div>
-        </div>
-      </div>
-
-      <div class="table-card">
-        <h3>Critical Data Health Items</h3>
-        <table>
-          <thead><tr><th>ID</th><th>Metric</th><th>Value</th><th>Owner</th></tr></thead>
-          <tbody>
-            <tr><td>DH-001</td><td>Critical formula errors</td><td>24</td><td>Quality Systems</td></tr>
-            <tr><td>DH-008</td><td>NCR without CAPA</td><td>41</td><td>Quality</td></tr>
-            <tr><td>DH-012</td><td>FG qty without CoC</td><td>31</td><td>Quality / Dispatch</td></tr>
-            <tr><td>DH-016</td><td>Material size review needed</td><td>54</td><td>Incoming Quality</td></tr>
-            <tr><td>DH-010</td><td>FAIR required but missing</td><td>9</td><td>Quality</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ========== PRODUCTION ========== -->
-    <div id="production" class="page">
-      <div class="kpi-row">
-        <div class="kpi orange"><div class="label">Production Incomplete</div><div class="value">58</div></div>
-        <div class="kpi red"><div class="label">Drawing Revision Block</div><div class="value">5</div></div>
-        <div class="kpi yellow"><div class="label">Duplicate Key</div><div class="value">4</div></div>
-        <div class="kpi purple"><div class="label">CoC Missing</div><div class="value">1</div></div>
-      </div>
-      <div class="charts-grid">
-        <div class="chart-card">
-          <h3>Blocking Reasons Distribution</h3>
-          <div class="chart-container"><canvas id="prodDonut"></canvas></div>
-        </div>
-        <div class="chart-card">
-          <h3>Blocking Reasons (Count)</h3>
-          <div class="chart-container"><canvas id="prodBar"></canvas></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ========== STORES ========== -->
-    <div id="stores" class="page">
-      <div class="kpi-row">
-        <div class="kpi red"><div class="label">Dispatch Blocked</div><div class="value">68</div></div>
-        <div class="kpi orange"><div class="label">FG without CoC</div><div class="value">31</div></div>
-        <div class="kpi green"><div class="label">Ready to Dispatch</div><div class="value">0</div></div>
-        <div class="kpi blue"><div class="label">Dispatched (sample)</div><div class="value">9</div></div>
-      </div>
-      <div class="charts-grid">
-        <div class="chart-card">
-          <h3>Dispatch Readiness</h3>
-          <div class="chart-container"><canvas id="storesDonut"></canvas></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ========== QUALITY GATE ========== -->
-    <div id="quality" class="page">
-      <div class="kpi-row">
-        <div class="kpi red"><div class="label">Blocked</div><div class="value">68</div></div>
-        <div class="kpi green"><div class="label">Released</div><div class="value">0</div></div>
-        <div class="kpi orange"><div class="label">RED Health</div><div class="value">9</div></div>
-        <div class="kpi yellow"><div class="label">Open NCR</div><div class="value">20</div></div>
-      </div>
-      <div class="charts-grid">
+      <div class="charts-row">
         <div class="chart-card">
           <h3>Final Gate Status</h3>
-          <div class="chart-container"><canvas id="qualDonut"></canvas></div>
+          <div class="chart-box"><canvas id="qualDonut"></canvas></div>
         </div>
         <div class="chart-card">
           <h3>Top Blocking Reasons</h3>
-          <div class="chart-container"><canvas id="qualBar"></canvas></div>
+          <div class="chart-box"><canvas id="qualBar"></canvas></div>
         </div>
       </div>
 
       <div class="table-card">
-        <h3>Blocked RCs – Action List (Sample)</h3>
+        <h3>Blocked RCs – Release Action List</h3>
         <table>
           <thead>
-            <tr><th>RC No</th><th>Part No</th><th>PO No</th><th>Gate Reason</th><th>KPI</th><th>FAIR</th></tr>
+            <tr>
+              <th>RC No</th>
+              <th>Part No</th>
+              <th>PO No</th>
+              <th>Final Gate / Reason</th>
+              <th>KPI Confidence</th>
+              <th>FAIR Status</th>
+            </tr>
           </thead>
           <tbody>
-            <tr><td><strong>RC-AERO-2605-146</strong></td><td>20-104483</td><td>PO26645</td><td><span class="badge badge-red">PRODUCTION INCOMPLETE</span></td><td><span class="badge badge-orange">PARTIAL</span></td><td>REVIEW</td></tr>
-            <tr><td><strong>RC-AERO-2607-338</strong></td><td>20-104483</td><td>PO26645</td><td><span class="badge badge-red">PRODUCTION INCOMPLETE</span></td><td><span class="badge badge-orange">PARTIAL</span></td><td>MISSING</td></tr>
-            <tr><td><strong>RC-AERO-2607-366</strong></td><td>20-104483</td><td>PO26645</td><td><span class="badge badge-red">COC MISSING</span></td><td><span class="badge badge-orange">PARTIAL</span></td><td>REVIEW</td></tr>
-            <tr><td><strong>RC-AERO-2607-340</strong></td><td>20-104355</td><td>PO26645</td><td><span class="badge badge-red">PRODUCTION INCOMPLETE</span></td><td><span class="badge badge-orange">PARTIAL</span></td><td>MISSING</td></tr>
-            <tr><td><strong>RC-AERO-2608-381</strong></td><td>20-104355</td><td>PO26645</td><td><span class="badge badge-red">PRODUCTION INCOMPLETE</span></td><td><span class="badge badge-orange">PARTIAL</span></td><td>MISSING</td></tr>
+            <tr>
+              <td><strong>RC-AERO-2605-146</strong></td>
+              <td>20-104483</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>REVIEW REQUIREMENT</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2605-147</strong></td>
+              <td>20-104483</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>REVIEW REQUIREMENT</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2607-338</strong></td>
+              <td>20-104483</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>MISSING</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2607-366</strong></td>
+              <td>20-104483</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">COC MISSING</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>REVIEW REQUIREMENT</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2607-340</strong></td>
+              <td>20-104355</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>MISSING</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2608-381</strong></td>
+              <td>20-104355</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>MISSING</td>
+            </tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- ========== PO TRACKER ========== -->
-    <div id="po" class="page">
-      <div class="kpi-row">
-        <div class="kpi blue"><div class="label">Active PO Lines</div><div class="value">3+</div></div>
-        <div class="kpi red"><div class="label">Blocked by Open NCR</div><div class="value">3</div></div>
-        <div class="kpi green"><div class="label">Dispatched Qty</div><div class="value">9</div></div>
+    <!-- ===================== PRODUCTION ===================== -->
+    <div id="production" class="page">
+      <div class="kpi-grid">
+        <div class="kpi red"><div class="label">Production Incomplete</div><div class="value">58</div></div>
+        <div class="kpi orange"><div class="label">Drawing Revision</div><div class="value">5</div></div>
+        <div class="kpi yellow"><div class="label">Duplicate Key</div><div class="value">4</div></div>
+        <div class="kpi purple"><div class="label">CoC Missing</div><div class="value">1</div></div>
+        <div class="kpi blue"><div class="label">Total Blocked RCs</div><div class="value">68</div></div>
       </div>
-      <div class="charts-grid">
+
+      <div class="charts-row">
         <div class="chart-card">
-          <h3>PO Status Overview</h3>
-          <div class="chart-container"><canvas id="poDonut"></canvas></div>
+          <h3>Blocking Reasons Distribution</h3>
+          <div class="chart-box"><canvas id="prodDonut"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Blocking Reasons Count</h3>
+          <div class="chart-box"><canvas id="prodBar"></canvas></div>
         </div>
       </div>
+    </div>
+
+    <!-- ===================== PO TRACKER ===================== -->
+    <div id="po" class="page">
+      <div class="kpi-grid">
+        <div class="kpi blue"><div class="label">Active PO</div><div class="value">PO26645</div></div>
+        <div class="kpi red"><div class="label">Lines Blocked by NCR</div><div class="value">3</div></div>
+        <div class="kpi green"><div class="label">Dispatched Qty</div><div class="value">9</div></div>
+        <div class="kpi"><div class="label">Customer</div><div class="value">EPC POWER</div></div>
+      </div>
+
       <div class="table-card">
-        <h3>PO26645 – EPC POWER</h3>
+        <h3>PO26645 – Live Status</h3>
         <table>
           <thead>
-            <tr><th>Part No</th><th>Part Name</th><th>PO Qty</th><th>Dispatched</th><th>Open NCR</th><th>Status</th></tr>
+            <tr>
+              <th>Part No</th>
+              <th>Part Name</th>
+              <th>PO Qty</th>
+              <th>Dispatched</th>
+              <th>Open NCR</th>
+              <th>Status</th>
+            </tr>
           </thead>
           <tbody>
-            <tr><td>20-104355</td><td>CAST END, LEFT SIDE - M</td><td>3</td><td>3</td><td>12</td><td><span class="badge badge-red">BLOCK - OPEN NCR</span></td></tr>
-            <tr><td>20-104356</td><td>CAST PIECE, RIGHT SIDE - M</td><td>3</td><td>3</td><td>11</td><td><span class="badge badge-red">BLOCK - OPEN NCR</span></td></tr>
-            <tr><td>20-104483</td><td>ENCLOSURE, CAST BOTTOM, FOOT - M</td><td>3</td><td>3</td><td>15</td><td><span class="badge badge-red">BLOCK - OPEN NCR</span></td></tr>
+            <tr>
+              <td>20-104355</td>
+              <td>CAST END, LEFT SIDE - M</td>
+              <td>3</td>
+              <td>3</td>
+              <td>12</td>
+              <td><span class="badge badge-red">BLOCK - OPEN NCR</span></td>
+            </tr>
+            <tr>
+              <td>20-104356</td>
+              <td>CAST PIECE, RIGHT SIDE - M</td>
+              <td>3</td>
+              <td>3</td>
+              <td>11</td>
+              <td><span class="badge badge-red">BLOCK - OPEN NCR</span></td>
+            </tr>
+            <tr>
+              <td>20-104483</td>
+              <td>ENCLOSURE, CAST BOTTOM, FOOT - M</td>
+              <td>3</td>
+              <td>3</td>
+              <td>15</td>
+              <td><span class="badge badge-red">BLOCK - OPEN NCR</span></td>
+            </tr>
           </tbody>
         </table>
       </div>
-    </div>
 
-    <!-- ========== TRACEABILITY ========== -->
-    <div id="trace" class="page">
-      <div class="kpi-row">
-        <div class="kpi orange"><div class="label">Material Size Review</div><div class="value">54</div></div>
-        <div class="kpi blue"><div class="label">IIR Linked</div><div class="value">Active</div></div>
-      </div>
-      <div class="table-card">
-        <h3>Traceability Chain</h3>
-        <table>
-          <thead><tr><th>Stage</th><th>Link</th><th>Key Field</th></tr></thead>
-          <tbody>
-            <tr><td>Incoming</td><td>INCOMING_INSPECTION</td><td>IIR No, Heat/Batch No</td></tr>
-            <tr><td>Issue</td><td>MATERIAL_ISSUE</td><td>RC No (Primary Key)</td></tr>
-            <tr><td>Inspection</td><td>FI_Tracker_New</td><td>RC No → FI Status</td></tr>
-            <tr><td>Finished Goods</td><td>FG_Tracker_New</td><td>RC No → Dispatch</td></tr>
-            <tr><td>Certification</td><td>COC_REGISTER</td><td>RC No + Qty</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ========== JOURNEY ========== -->
-    <div id="journey" class="page">
-      <div class="table-card">
-        <h3>End-to-End RC Journey</h3>
-        <table>
-          <thead><tr><th>Step</th><th>Sheet</th><th>Action</th></tr></thead>
-          <tbody>
-            <tr><td>1</td><td>MATERIAL_ISSUE</td><td>Create RC, Issue Qty, Machine & Operator</td></tr>
-            <tr><td>2</td><td>MATERIAL_ISSUE</td><td>Update Accepted / Rework / NCR / Rejected</td></tr>
-            <tr><td>3</td><td>FI_Tracker_New</td><td>Final Inspection Clearance</td></tr>
-            <tr><td>4</td><td>FG_Tracker_New</td><td>Finished Goods & Dispatch Qty</td></tr>
-            <tr><td>5</td><td>RC_CONTROL</td><td>Final Gate → RELEASE or BLOCK</td></tr>
-            <tr><td>6</td><td>COC_REGISTER</td><td>Certificate of Conformance</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div style="background:#1e293b; border:1px solid #334155; border-radius:12px; padding:20px; margin-top:16px;">
-        <strong style="color:#60a5fa;">Primary Key:</strong> <span style="color:#f1f5f9;">RC No</span> links every stage from Material Issue → FI → FG → FAIR → NCR → CAPA → CoC → PO.
+      <div class="note" style="margin-top:20px;">
+        Dispatch is automatically blocked when Open NCR exists. Clear NCRs and complete production to move status to Ready for Dispatch / Completed.
       </div>
     </div>
 
   </div>
 
   <div class="footer">
-    Renewable Tracker Executive Dashboard • Powered by Google Sheets + Vercel
+    Renewable Tracker • Phase 1 Dashboard • Connected to Google Sheets • Deployed on Vercel
   </div>
 
   <script>
-    // Tab switching
+    // Tab navigation
     document.querySelectorAll('nav button').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
@@ -411,105 +465,18 @@
       });
     });
 
-    // Chart defaults
-    Chart.defaults.color = '#94a3b8';
-    Chart.defaults.borderColor = '#334155';
+    // Charts
     Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+    Chart.defaults.color = '#64748b';
 
-    // ===== Management Charts =====
+    // Management Donut
     new Chart(document.getElementById('mgmtDonut'), {
       type: 'doughnut',
       data: {
-        labels: ['Blocked', 'Released'],
+        labels: ['Blocked (68)', 'Released (0)'],
         datasets: [{
           data: [68, 0],
           backgroundColor: ['#ef4444', '#22c55e'],
-          borderWidth: 0,
-          hoverOffset: 6
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'bottom', labels: { padding: 16 } }
-        },
-        cutout: '68%'
-      }
-    });
-
-    new Chart(document.getElementById('mgmtBar'), {
-      type: 'bar',
-      data: {
-        labels: ['Formula Errors', 'NCR no CAPA', 'FG no CoC', 'Mat. Size Review', 'FAIR Missing'],
-        datasets: [{
-          label: 'Count',
-          data: [24, 41, 31, 54, 9],
-          backgroundColor: ['#3b82f6', '#ef4444', '#f97316', '#eab308', '#a855f7'],
-          borderRadius: 6,
-          borderSkipped: false
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          y: { beginAtZero: true, grid: { color: '#334155' } },
-          x: { grid: { display: false } }
-        }
-      }
-    });
-
-    // ===== Production Charts =====
-    new Chart(document.getElementById('prodDonut'), {
-      type: 'doughnut',
-      data: {
-        labels: ['Production Incomplete', 'Drawing Revision', 'Duplicate Key', 'CoC Missing'],
-        datasets: [{
-          data: [58, 5, 4, 1],
-          backgroundColor: ['#ef4444', '#f97316', '#eab308', '#a855f7'],
-          borderWidth: 0
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom', labels: { padding: 12, font: { size: 11 } } } },
-        cutout: '65%'
-      }
-    });
-
-    new Chart(document.getElementById('prodBar'), {
-      type: 'bar',
-      data: {
-        labels: ['Prod Incomplete', 'Drawing Rev', 'Duplicate', 'CoC Missing'],
-        datasets: [{
-          data: [58, 5, 4, 1],
-          backgroundColor: '#3b82f6',
-          borderRadius: 6
-        }]
-      },
-      options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { beginAtZero: true, grid: { color: '#334155' } },
-          y: { grid: { display: false } }
-        }
-      }
-    });
-
-    // ===== Stores =====
-    new Chart(document.getElementById('storesDonut'), {
-      type: 'doughnut',
-      data: {
-        labels: ['Blocked', 'No CoC', 'Ready', 'Dispatched'],
-        datasets: [{
-          data: [68, 31, 0, 9],
-          backgroundColor: ['#ef4444', '#f97316', '#22c55e', '#3b82f6'],
           borderWidth: 0
         }]
       },
@@ -517,11 +484,33 @@
         responsive: true,
         maintainAspectRatio: false,
         plugins: { legend: { position: 'bottom' } },
-        cutout: '65%'
+        cutout: '70%'
       }
     });
 
-    // ===== Quality =====
+    // Management Bar
+    new Chart(document.getElementById('mgmtBar'), {
+      type: 'bar',
+      data: {
+        labels: ['Prod Incomplete', 'Drawing Rev', 'Duplicate', 'CoC Missing'],
+        datasets: [{
+          data: [58, 5, 4, 1],
+          backgroundColor: ['#ef4444', '#f97316', '#eab308', '#8b5cf6'],
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#e2e8f0' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    // Quality Donut
     new Chart(document.getElementById('qualDonut'), {
       type: 'doughnut',
       data: {
@@ -540,13 +529,14 @@
       }
     });
 
+    // Quality Bar
     new Chart(document.getElementById('qualBar'), {
       type: 'bar',
       data: {
         labels: ['Prod Incomplete', 'Drawing Rev', 'Duplicate', 'CoC Missing'],
         datasets: [{
           data: [58, 5, 4, 1],
-          backgroundColor: ['#ef4444', '#f97316', '#eab308', '#a855f7'],
+          backgroundColor: ['#ef4444', '#f97316', '#eab308', '#8b5cf6'],
           borderRadius: 6
         }]
       },
@@ -555,28 +545,51 @@
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          y: { beginAtZero: true, grid: { color: '#334155' } },
+          y: { beginAtZero: true, grid: { color: '#e2e8f0' } },
           x: { grid: { display: false } }
         }
       }
     });
 
-    // ===== PO =====
-    new Chart(document.getElementById('poDonut'), {
+    // Production Donut
+    new Chart(document.getElementById('prodDonut'), {
       type: 'doughnut',
       data: {
-        labels: ['Blocked by NCR', 'Clear'],
+        labels: ['Prod Incomplete', 'Drawing Rev', 'Duplicate', 'CoC Missing'],
         datasets: [{
-          data: [3, 0],
-          backgroundColor: ['#ef4444', '#22c55e'],
+          data: [58, 5, 4, 1],
+          backgroundColor: ['#ef4444', '#f97316', '#eab308', '#8b5cf6'],
           borderWidth: 0
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom' } },
+        plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } },
         cutout: '65%'
+      }
+    });
+
+    // Production Bar
+    new Chart(document.getElementById('prodBar'), {
+      type: 'bar',
+      data: {
+        labels: ['Prod Incomplete', 'Drawing Rev', 'Duplicate', 'CoC Missing'],
+        datasets: [{
+          data: [58, 5, 4, 1],
+          backgroundColor: '#3b82f6',
+          borderRadius: 6
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { beginAtZero: true, grid: { color: '#e2e8f0' } },
+          y: { grid: { display: false } }
+        }
       }
     });
   </script>
