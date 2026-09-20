@@ -1,92 +1,591 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>GMPL Management Dashboard</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+import React from "react";
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer
+} from "recharts";
 
-<body>
+import {
+  Factory,
+  Package,
+  Truck,
+  ClipboardCheck,
+  AlertTriangle,
+  Boxes
+} from "lucide-react";
 
-<h1>GMPL Management Dashboard</h1>
 
-<div class="kpi-container">
+export default function App() {
 
-    <div class="card">
-        <h3>Total PO</h3>
-        <p id="po">0</p>
-    </div>
 
-    <div class="card">
-        <h3>RC Released</h3>
-        <p id="rc">0</p>
-    </div>
+const kpiData = [
+{
+title:"Total PO",
+value:"125",
+icon:<Package/>
+},
+{
+title:"Active RC",
+value:"98",
+icon:<ClipboardCheck/>
+},
+{
+title:"Production Qty",
+value:"8500",
+icon:<Factory/>
+},
+{
+title:"FG Ready",
+value:"7200",
+icon:<Boxes/>
+},
+{
+title:"Dispatch Qty",
+value:"6500",
+icon:<Truck/>
+},
+{
+title:"Open NCR",
+value:"12",
+icon:<AlertTriangle/>
+}
 
-    <div class="card">
-        <h3>Production Qty</h3>
-        <p id="production">0</p>
-    </div>
+];
 
-    <div class="card">
-        <h3>Dispatch Qty</h3>
-        <p id="dispatch">0</p>
-    </div>
 
-    <div class="card">
-        <h3>Open NCR</h3>
-        <p id="ncr">0</p>
-    </div>
+
+const customerData=[
+
+{
+customer:"HAL",
+PO:5000,
+Production:4200,
+Dispatch:3500
+},
+
+{
+customer:"ASACO",
+PO:2500,
+Production:1800,
+Dispatch:1500
+},
+
+{
+customer:"Customer-3",
+PO:2000,
+Production:1600,
+Dispatch:1200
+}
+
+];
+
+
+
+const wipData=[
+
+{
+stage:"Material Issue",
+qty:10000
+},
+
+{
+stage:"Machining",
+qty:8500
+},
+
+{
+stage:"Deburring",
+qty:8200
+},
+
+{
+stage:"Inspection",
+qty:7800
+},
+
+{
+stage:"FG",
+qty:7200
+},
+
+{
+stage:"Dispatch",
+qty:6500
+}
+
+];
+
+
+
+const qualityData=[
+
+{
+month:"Jan",
+Supplier:20,
+Machining:15,
+Customer:2
+},
+
+{
+month:"Feb",
+Supplier:12,
+Machining:10,
+Customer:1
+},
+
+{
+month:"Mar",
+Supplier:8,
+Machining:6,
+Customer:0
+},
+
+{
+month:"Apr",
+Supplier:5,
+Machining:4,
+Customer:0
+}
+
+];
+
+
+
+const ncrData=[
+
+{
+name:"Open",
+value:12
+},
+
+{
+name:"Closed",
+value:45
+},
+
+{
+name:"Pending",
+value:5
+}
+
+];
+
+
+
+const review=[
+
+{
+kpi:"On Time Delivery",
+target:"≥95%",
+actual:"92%",
+status:"Need Action"
+},
+
+{
+kpi:"FPY",
+target:"≥98%",
+actual:"97%",
+status:"Monitor"
+},
+
+{
+kpi:"Supplier Rejection",
+target:"<2%",
+actual:"1.5%",
+status:"OK"
+},
+
+{
+kpi:"NCR Closure",
+target:"≤30 Days",
+actual:"25 Days",
+status:"OK"
+}
+
+];
+
+
+
+return (
+
+<div style={{
+padding:"25px",
+background:"#f4f6f8",
+minHeight:"100vh",
+fontFamily:"Arial"
+}}>
+
+
+<h1>
+GMPL Aerospace Manufacturing ERP Dashboard
+</h1>
+
+
+<p>
+Plant : Adibatla | Department : Management
+</p>
+
+
+
+{/* KPI CARDS */}
+
+
+<div style={{
+display:"grid",
+gridTemplateColumns:"repeat(6,1fr)",
+gap:"15px",
+marginTop:"20px"
+}}>
+
+
+{
+kpiData.map((k)=>(
+
+<div style={{
+background:"white",
+padding:"20px",
+borderRadius:"12px",
+boxShadow:"0 2px 5px #ccc"
+}}>
+
+
+<div>
+{k.icon}
+</div>
+
+
+<h3>
+{k.title}
+</h3>
+
+
+<h1>
+{k.value}
+</h1>
+
+
+</div>
+
+))
+
+}
 
 </div>
 
 
-<div class="section">
 
-<h2>RC Production Status</h2>
 
-<table>
+{/* CUSTOMER STATUS */}
+
+
+<div style={{
+background:"white",
+marginTop:"30px",
+padding:"20px",
+borderRadius:"12px"
+}}>
+
+
+<h2>
+Customer Order Status
+</h2>
+
+
+<ResponsiveContainer width="100%" height={350}>
+
+
+<BarChart data={customerData}>
+
+
+<XAxis dataKey="customer"/>
+
+<YAxis/>
+
+<Tooltip/>
+
+<Legend/>
+
+
+<Bar dataKey="PO"/>
+
+<Bar dataKey="Production"/>
+
+<Bar dataKey="Dispatch"/>
+
+
+</BarChart>
+
+
+</ResponsiveContainer>
+
+
+</div>
+
+
+
+
+
+{/* WIP FLOW */}
+
+
+<div style={{
+background:"white",
+marginTop:"30px",
+padding:"20px",
+borderRadius:"12px"
+}}>
+
+
+<h2>
+Production WIP Flow
+</h2>
+
+
+{
+
+wipData.map((w)=>(
+
+<div style={{
+margin:"15px 0"
+}}>
+
+
+<b>
+{w.stage} : {w.qty}
+</b>
+
+
+<div style={{
+background:"#ddd",
+height:"20px",
+borderRadius:"10px"
+}}>
+
+
+<div style={{
+
+width:(w.qty/10000*100)+"%",
+height:"20px",
+background:"#4caf50",
+borderRadius:"10px"
+
+}}>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+))
+
+}
+
+
+</div>
+
+
+
+
+
+{/* QUALITY TREND */}
+
+
+<div style={{
+background:"white",
+marginTop:"30px",
+padding:"20px",
+borderRadius:"12px"
+}}>
+
+
+<h2>
+Quality Rejection Trend
+</h2>
+
+
+<ResponsiveContainer width="100%" height={300}>
+
+
+<LineChart data={qualityData}>
+
+
+<XAxis dataKey="month"/>
+
+<YAxis/>
+
+<Tooltip/>
+
+<Legend/>
+
+
+<Line dataKey="Supplier"/>
+
+<Line dataKey="Machining"/>
+
+<Line dataKey="Customer"/>
+
+
+</LineChart>
+
+
+</ResponsiveContainer>
+
+
+</div>
+
+
+
+
+
+
+{/* NCR */}
+
+
+<div style={{
+background:"white",
+marginTop:"30px",
+padding:"20px",
+borderRadius:"12px"
+}}>
+
+
+<h2>
+NCR Status
+</h2>
+
+
+<ResponsiveContainer width="100%" height={250}>
+
+
+<PieChart>
+
+
+<Pie
+data={ncrData}
+dataKey="value"
+nameKey="name"
+outerRadius={90}
+label
+>
+
+
+{
+ncrData.map((entry,index)=>(
+
+<Cell key={index}/>
+
+))
+
+}
+
+
+</Pie>
+
+
+<Tooltip/>
+
+</PieChart>
+
+
+</ResponsiveContainer>
+
+
+</div>
+
+
+
+
+
+
+
+{/* MANAGEMENT REVIEW */}
+
+
+
+<div style={{
+background:"white",
+marginTop:"30px",
+padding:"20px",
+borderRadius:"12px"
+}}>
+
+
+<h2>
+Management Review KPI
+</h2>
+
+
+<table width="100%" border="1" cellPadding="10">
+
+
+<thead>
 
 <tr>
-<th>RC No</th>
-<th>PO Qty</th>
-<th>Produced</th>
-<th>FG</th>
-<th>Dispatch</th>
-<th>Balance</th>
+
+<th>KPI</th>
+
+<th>Target</th>
+
+<th>Actual</th>
+
+<th>Status</th>
+
 </tr>
 
-<tbody id="productionTable">
+</thead>
+
+
+
+<tbody>
+
+
+{
+review.map(r=>(
+
+<tr>
+
+<td>{r.kpi}</td>
+
+<td>{r.target}</td>
+
+<td>{r.actual}</td>
+
+<td>{r.status}</td>
+
+</tr>
+
+
+))
+
+}
+
 
 </tbody>
 
+
 </table>
+
 
 </div>
 
 
-<div class="section">
-
-<h2>Quality Performance</h2>
-
-<table>
-
-<tr>
-<th>Month</th>
-<th>Supplier Rejection</th>
-<th>Machining Rejection</th>
-<th>Customer Complaint</th>
-</tr>
-
-
-<tbody id="qualityTable">
-
-</tbody>
-
-</table>
 
 </div>
 
+);
 
-<script src="dashboard.js"></script>
-
-</body>
-</html>
+}
