@@ -3,26 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quality Gate Dashboard</title>
+  <title>Renewable Tracker Dashboard</title>
   <style>
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Segoe UI', Arial, sans-serif;
+      font-family: 'Segoe UI', system-ui, sans-serif;
       background: #f0f2f5;
-      margin: 0;
-      padding: 20px;
       color: #1a202c;
+      line-height: 1.5;
     }
-    .header {
-      background: linear-gradient(135deg, #1a365d, #2b6cb0);
+    .topbar {
+      background: linear-gradient(135deg, #0f172a, #1e3a5f);
       color: white;
-      padding: 22px 28px;
-      border-radius: 12px;
-      margin-bottom: 24px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
     }
-    .header h1 { margin: 0; font-size: 26px; font-weight: 600; }
-    .header p { margin: 6px 0 0; opacity: 0.9; font-size: 14px; }
+    .topbar h1 { font-size: 20px; font-weight: 600; }
+    .topbar span { font-size: 13px; opacity: 0.85; }
+    nav {
+      background: #1e293b;
+      padding: 0 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      overflow-x: auto;
+    }
+    nav button {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      padding: 14px 16px;
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    nav button:hover { color: white; background: rgba(255,255,255,0.05); }
+    nav button.active {
+      color: white;
+      border-bottom-color: #3b82f6;
+      background: rgba(59,130,246,0.1);
+    }
+    .content { padding: 24px; max-width: 1400px; margin: 0 auto; }
+    .page { display: none; }
+    .page.active { display: block; }
     .cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -31,316 +60,621 @@
     }
     .card {
       background: white;
-      padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      text-align: center;
-      border-top: 4px solid #cbd5e0;
+      padding: 18px 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border-top: 4px solid #cbd5e1;
     }
-    .card.blocked { border-top-color: #e53e3e; }
-    .card.released { border-top-color: #38a169; }
-    .card.red { border-top-color: #dd6b20; }
-    .card.ncr { border-top-color: #d69e2e; }
-    .card .label { font-size: 13px; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; }
-    .card .number { font-size: 36px; font-weight: 700; margin: 8px 0 0; }
-    .card.blocked .number { color: #e53e3e; }
-    .card.released .number { color: #38a169; }
-    .card.red .number { color: #dd6b20; }
-    .card.ncr .number { color: #d69e2e; }
-    .section-title {
+    .card .label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px; }
+    .card .value { font-size: 28px; font-weight: 700; margin-top: 6px; }
+    .card.red { border-top-color: #ef4444; }
+    .card.red .value { color: #ef4444; }
+    .card.green { border-top-color: #22c55e; }
+    .card.green .value { color: #22c55e; }
+    .card.orange { border-top-color: #f97316; }
+    .card.orange .value { color: #f97316; }
+    .card.blue { border-top-color: #3b82f6; }
+    .card.blue .value { color: #3b82f6; }
+    .card.yellow { border-top-color: #eab308; }
+    .card.yellow .value { color: #ca8a04; }
+    .card.purple { border-top-color: #8b5cf6; }
+    .card.purple .value { color: #7c3aed; }
+    h2 {
       font-size: 18px;
       font-weight: 600;
-      margin: 0 0 14px;
-      color: #2d3748;
+      margin-bottom: 14px;
+      color: #1e293b;
     }
-    .table-container {
+    .table-wrap {
       background: white;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      overflow: auto;
+      margin-bottom: 24px;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
     th {
-      background: #2d3748;
+      background: #1e293b;
       color: white;
-      padding: 13px 16px;
+      padding: 12px 14px;
       text-align: left;
-      font-size: 13px;
       font-weight: 600;
+      white-space: nowrap;
     }
     td {
-      padding: 12px 16px;
-      border-bottom: 1px solid #edf2f7;
-      font-size: 13.5px;
+      padding: 11px 14px;
+      border-bottom: 1px solid #f1f5f9;
     }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: #f7fafc; }
+    tr:hover td { background: #f8fafc; }
     .badge {
       display: inline-block;
-      padding: 3px 9px;
+      padding: 2px 9px;
       border-radius: 20px;
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 600;
     }
-    .badge-block { background: #fed7d7; color: #c53030; }
-    .badge-partial { background: #feebc8; color: #c05621; }
-    .badge-missing { background: #e2e8f0; color: #4a5568; }
-    .loading, .error, .empty {
-      text-align: center;
-      padding: 40px 20px;
-      color: #718096;
+    .badge-red { background: #fee2e2; color: #b91c1c; }
+    .badge-green { background: #dcfce7; color: #15803d; }
+    .badge-orange { background: #ffedd5; color: #c2410c; }
+    .badge-yellow { background: #fef9c3; color: #a16207; }
+    .badge-gray { background: #f1f5f9; color: #475569; }
+    .note {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      font-size: 13.5px;
+      color: #1e40af;
+      margin-bottom: 20px;
     }
-    .error { color: #c53030; background: #fff5f5; }
     .footer {
-      margin-top: 30px;
       text-align: center;
-      font-size: 13px;
-      color: #a0aec0;
+      padding: 20px;
+      font-size: 12.5px;
+      color: #94a3b8;
+    }
+    @media (max-width: 640px) {
+      .topbar { flex-direction: column; gap: 6px; text-align: center; }
+      nav button { padding: 12px 12px; font-size: 12.5px; }
     }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <h1>Quality Gate Dashboard</h1>
-    <p>Renewable Tracker • Live data from Google Sheets</p>
+  <div class="topbar">
+    <div>
+      <h1>Renewable Tracker</h1>
+      <span>Management • Production • Quality • Stores • Traceability</span>
+    </div>
+    <div style="font-size:13px; opacity:0.9;">Live from Google Sheets</div>
   </div>
 
-  <div id="errorBox" class="error" style="display:none;"></div>
+  <nav id="nav">
+    <button class="active" data-page="management">Management</button>
+    <button data-page="production">Production</button>
+    <button data-page="stores">Stores / Dispatch</button>
+    <button data-page="quality">Quality Gate</button>
+    <button data-page="po">PO Tracker</button>
+    <button data-page="traceability">Material Traceability</button>
+    <button data-page="journey">Part & RC Journey</button>
+  </nav>
 
-  <div class="cards">
-    <div class="card blocked">
-      <div class="label">RCs Blocked</div>
-      <div class="number" id="blockedCount">–</div>
-    </div>
-    <div class="card released">
-      <div class="label">RCs Released</div>
-      <div class="number" id="releasedCount">–</div>
-    </div>
-    <div class="card red">
-      <div class="label">RED Data Health</div>
-      <div class="number" id="redCount">–</div>
-    </div>
-    <div class="card ncr">
-      <div class="label">Open NCR RCs</div>
-      <div class="number" id="ncrCount">–</div>
-    </div>
-  </div>
+  <div class="content">
 
-  <div class="section-title">Blocked RCs – Release Action List</div>
-  <div class="table-container">
-    <div id="loading" class="loading">Loading live data from Google Sheet…</div>
-    <table id="dataTable" style="display:none;">
-      <thead>
-        <tr>
-          <th>RC No</th>
-          <th>Part No</th>
-          <th>PO No</th>
-          <th>Final Gate / Reason</th>
-          <th>KPI Confidence</th>
-          <th>FAIR Status</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
-    <div id="emptyMsg" class="empty" style="display:none;">No blocked RCs found.</div>
+    <!-- ==================== MANAGEMENT ==================== -->
+    <div id="management" class="page active">
+      <div class="note">Management overview – key health indicators across the entire tracker.</div>
+      <div class="cards">
+        <div class="card red">
+          <div class="label">RCs Blocked</div>
+          <div class="value">68</div>
+        </div>
+        <div class="card green">
+          <div class="label">RCs Released</div>
+          <div class="value">0</div>
+        </div>
+        <div class="card orange">
+          <div class="label">RED Data Health</div>
+          <div class="value">9</div>
+        </div>
+        <div class="card yellow">
+          <div class="label">Open NCR RCs</div>
+          <div class="value">20</div>
+        </div>
+        <div class="card blue">
+          <div class="label">Critical Formula Errors</div>
+          <div class="value">24</div>
+        </div>
+        <div class="card purple">
+          <div class="label">FAIR Missing</div>
+          <div class="value">9</div>
+        </div>
+      </div>
+
+      <h2>Overall Quality Posture</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Description</th>
+              <th>Action Required</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-red">AT RISK</span></td>
+              <td>68 RCs blocked • 0 released • Multiple open NCRs and data health issues</td>
+              <td>Clear RED items in DATA_HEALTH before management assurance</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Top Data Health Exceptions</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Control ID</th>
+              <th>Metric</th>
+              <th>Current Value</th>
+              <th>Owner</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>DH-001</td><td>Critical formula errors</td><td>24</td><td>Quality Systems</td></tr>
+            <tr><td>DH-003</td><td>Duplicate RC records</td><td>4</td><td>Operations</td></tr>
+            <tr><td>DH-008</td><td>NCR without CAPA linkage</td><td>41</td><td>Quality</td></tr>
+            <tr><td>DH-010</td><td>FAIR required but missing</td><td>9</td><td>Quality</td></tr>
+            <tr><td>DH-012</td><td>FG quantity without CoC</td><td>31</td><td>Quality / Dispatch</td></tr>
+            <tr><td>DH-015</td><td>Drawing revision mismatches</td><td>5</td><td>Engineering / Quality</td></tr>
+            <tr><td>DH-016</td><td>Material size requiring review</td><td>54</td><td>Incoming Quality</td></tr>
+            <tr><td>DH-017</td><td>PO qty lower than issued</td><td>3</td><td>Commercial / Operations</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ==================== PRODUCTION ==================== -->
+    <div id="production" class="page">
+      <div class="note">Production status across all Route Cards (RC).</div>
+      <div class="cards">
+        <div class="card blue">
+          <div class="label">Total RCs in System</div>
+          <div class="value">68+</div>
+        </div>
+        <div class="card orange">
+          <div class="label">Production Incomplete</div>
+          <div class="value">58</div>
+        </div>
+        <div class="card red">
+          <div class="label">Blocked – Drawing Rev</div>
+          <div class="value">5</div>
+        </div>
+        <div class="card yellow">
+          <div class="label">Duplicate Key</div>
+          <div class="value">4</div>
+        </div>
+        <div class="card purple">
+          <div class="label">CoC Missing</div>
+          <div class="value">1</div>
+        </div>
+      </div>
+
+      <h2>Blocking Reasons Summary</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Blocking Reason</th>
+              <th>RC Count</th>
+              <th>Priority</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>BLOCK - PRODUCTION INCOMPLETE</td>
+              <td>58</td>
+              <td><span class="badge badge-red">High</span></td>
+            </tr>
+            <tr>
+              <td>BLOCK - DRAWING REVISION</td>
+              <td>5</td>
+              <td><span class="badge badge-orange">Medium</span></td>
+            </tr>
+            <tr>
+              <td>BLOCK - DUPLICATE KEY</td>
+              <td>4</td>
+              <td><span class="badge badge-orange">Medium</span></td>
+            </tr>
+            <tr>
+              <td>BLOCK - COC MISSING</td>
+              <td>1</td>
+              <td><span class="badge badge-yellow">Low</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ==================== STORES / DISPATCH ==================== -->
+    <div id="stores" class="page">
+      <div class="note">Finished Goods, Dispatch status and CoC readiness.</div>
+      <div class="cards">
+        <div class="card blue">
+          <div class="label">Ready for Dispatch</div>
+          <div class="value">–</div>
+        </div>
+        <div class="card green">
+          <div class="label">Dispatched</div>
+          <div class="value">–</div>
+        </div>
+        <div class="card orange">
+          <div class="label">FG without CoC</div>
+          <div class="value">31</div>
+        </div>
+        <div class="card red">
+          <div class="label">Dispatch Blocked</div>
+          <div class="value">68</div>
+        </div>
+      </div>
+
+      <h2>Dispatch Status Overview</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Description</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-red">Blocked</span></td>
+              <td>Most RCs cannot be released due to open production / NCR / CoC issues</td>
+              <td>Clear Quality Gate first</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-orange">CoC Missing</span></td>
+              <td>31 FG quantities without Certificate of Conformance</td>
+              <td>Quality / Dispatch to generate CoC</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ==================== QUALITY GATE ==================== -->
+    <div id="quality" class="page">
+      <div class="note">Final release gate – RC level control. No failed control is converted to GREEN.</div>
+      <div class="cards">
+        <div class="card red">
+          <div class="label">RCs Blocked</div>
+          <div class="value">68</div>
+        </div>
+        <div class="card green">
+          <div class="label">RCs Released</div>
+          <div class="value">0</div>
+        </div>
+        <div class="card orange">
+          <div class="label">RED Data Health</div>
+          <div class="value">9</div>
+        </div>
+        <div class="card yellow">
+          <div class="label">Open NCR RCs</div>
+          <div class="value">20</div>
+        </div>
+      </div>
+
+      <h2>Blocked RCs – Release Action List</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>RC No</th>
+              <th>Part No</th>
+              <th>PO No</th>
+              <th>Final Gate / Reason</th>
+              <th>KPI Confidence</th>
+              <th>FAIR Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>RC-AERO-2605-146</strong></td>
+              <td>20-104483</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">BLOCK - PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>REVIEW REQUIREMENT</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2605-147</strong></td>
+              <td>20-104483</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">BLOCK - PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>REVIEW REQUIREMENT</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2607-338</strong></td>
+              <td>20-104483</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">BLOCK - PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>MISSING</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2607-339</strong></td>
+              <td>20-104483</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">BLOCK - PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>MISSING</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2607-340</strong></td>
+              <td>20-104355</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">BLOCK - PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>MISSING</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2607-341</strong></td>
+              <td>20-104355</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">BLOCK - PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>MISSING</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2607-342</strong></td>
+              <td>20-104356</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">BLOCK - PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>MISSING</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2607-343</strong></td>
+              <td>20-104356</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">BLOCK - PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>MISSING</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2607-366</strong></td>
+              <td>20-104483</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">BLOCK - COC MISSING</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>REVIEW REQUIREMENT</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2607-365</strong></td>
+              <td>20-104483</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">BLOCK - PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>REVIEW REQUIREMENT</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2608-381</strong></td>
+              <td>20-104355</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">BLOCK - PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>MISSING</td>
+            </tr>
+            <tr>
+              <td><strong>RC-AERO-2608-382</strong></td>
+              <td>20-104355</td>
+              <td>PO26645</td>
+              <td><span class="badge badge-red">BLOCK - PRODUCTION INCOMPLETE</span></td>
+              <td><span class="badge badge-orange">PARTIAL</span></td>
+              <td>REVIEW REQUIREMENT</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ==================== PO TRACKER ==================== -->
+    <div id="po" class="page">
+      <div class="note">Purchase Order fulfilment status.</div>
+      <div class="cards">
+        <div class="card blue">
+          <div class="label">Active POs</div>
+          <div class="value">1+</div>
+        </div>
+        <div class="card red">
+          <div class="label">Blocked by Open NCR</div>
+          <div class="value">3</div>
+        </div>
+        <div class="card green">
+          <div class="label">Dispatched Qty (sample)</div>
+          <div class="value">9</div>
+        </div>
+      </div>
+
+      <h2>PO Summary</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>PO No</th>
+              <th>Customer</th>
+              <th>Part No</th>
+              <th>Part Name</th>
+              <th>PO Qty</th>
+              <th>Dispatched</th>
+              <th>Open NCR</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>PO26645</strong></td>
+              <td>EPC POWER</td>
+              <td>20-104355</td>
+              <td>CAST END, LEFT SIDE - M</td>
+              <td>3</td>
+              <td>3</td>
+              <td>12</td>
+              <td><span class="badge badge-red">BLOCK - OPEN NCR</span></td>
+            </tr>
+            <tr>
+              <td><strong>PO26645</strong></td>
+              <td>EPC POWER</td>
+              <td>20-104356</td>
+              <td>CAST PIECE, RIGHT SIDE - M</td>
+              <td>3</td>
+              <td>3</td>
+              <td>11</td>
+              <td><span class="badge badge-red">BLOCK - OPEN NCR</span></td>
+            </tr>
+            <tr>
+              <td><strong>PO26645</strong></td>
+              <td>EPC POWER</td>
+              <td>20-104483</td>
+              <td>ENCLOSURE, CAST BOTTOM, FOOT - M</td>
+              <td>3</td>
+              <td>3</td>
+              <td>15</td>
+              <td><span class="badge badge-red">BLOCK - OPEN NCR</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ==================== MATERIAL TRACEABILITY ==================== -->
+    <div id="traceability" class="page">
+      <div class="note">Material and batch level traceability linked to RC / IIR.</div>
+      <div class="cards">
+        <div class="card blue">
+          <div class="label">Incoming Inspection Records</div>
+          <div class="value">Multiple</div>
+        </div>
+        <div class="card orange">
+          <div class="label">Material Size Review Needed</div>
+          <div class="value">54</div>
+        </div>
+      </div>
+
+      <h2>Key Traceability Points</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Link</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>IIR → Material Issue</td>
+              <td>Incoming Inspection feeds Material Issue (Qty Issued / Accepted)</td>
+            </tr>
+            <tr>
+              <td>Material Issue → FI / FG</td>
+              <td>RC No is the primary key across all production stages</td>
+            </tr>
+            <tr>
+              <td>Heat No / Batch No</td>
+              <td>Captured in Incoming Inspection for full material pedigree</td>
+            </tr>
+            <tr>
+              <td>CoC Register</td>
+              <td>Certificate of Conformance linked at dispatch stage</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ==================== PART & RC JOURNEY ==================== -->
+    <div id="journey" class="page">
+      <div class="note">End-to-end journey of a Route Card (RC) from Material Issue to Dispatch.</div>
+      
+      <h2>Standard RC Flow</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Stage</th>
+              <th>Sheet</th>
+              <th>Key Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1. Material Issue</td>
+              <td>MATERIAL_ISSUE</td>
+              <td>Create RC No, issue quantity, record machine / operator</td>
+            </tr>
+            <tr>
+              <td>2. Production</td>
+              <td>MATERIAL_ISSUE</td>
+              <td>Update Qty Accepted / Rework / NCR / Rejected</td>
+            </tr>
+            <tr>
+              <td>3. Final Inspection</td>
+              <td>FI_Tracker_New</td>
+              <td>Enter RC → auto-populate → set FI Clearance Status</td>
+            </tr>
+            <tr>
+              <td>4. Finished Goods</td>
+              <td>FG_Tracker_New</td>
+              <td>Enter RC → update Dispatch Qty, DC No, Invoice</td>
+            </tr>
+            <tr>
+              <td>5. Quality Gate</td>
+              <td>RC_CONTROL</td>
+              <td>Final RELEASE or BLOCK decision</td>
+            </tr>
+            <tr>
+              <td>6. Dispatch</td>
+              <td>COC_REGISTER + FG</td>
+              <td>CoC generation and physical dispatch</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Primary Key</h2>
+      <div class="note" style="background:#f0fdf4; border-color:#22c55e; color:#166534;">
+        <strong>RC No</strong> is the single primary key that links Material Issue → FI → FG → FAIR → NCR → CAPA → CoC → PO Tracker.
+      </div>
+    </div>
+
   </div>
 
   <div class="footer">
-    Data source: Google Sheets • Auto-refreshes on page load
+    Renewable Tracker Dashboard • Data from Google Sheets • Deployed on Vercel
   </div>
 
   <script>
-    const SHEET_ID = "1MJ7KT2AcqTxlNPd7pcCEJyoEs-cHa3LWFtS3ohKcUMM";
+    // Simple tab switching
+    const buttons = document.querySelectorAll('nav button');
+    const pages = document.querySelectorAll('.page');
 
-    // Try multiple ways to get the Quality Gate Dashboard sheet
-    const possibleUrls = [
-      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Quality%20Gate%20Dashboard`,
-      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Quality%20Gate%20Dashboard&headers=1`,
-      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`
-    ];
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Remove active from all
+        buttons.forEach(b => b.classList.remove('active'));
+        pages.forEach(p => p.classList.remove('active'));
 
-    function parseCSV(text) {
-      const rows = [];
-      let current = "";
-      let inQuotes = false;
-      let row = [];
-
-      for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        const next = text[i + 1];
-
-        if (char === '"' && inQuotes && next === '"') {
-          current += '"';
-          i++;
-        } else if (char === '"') {
-          inQuotes = !inQuotes;
-        } else if (char === ',' && !inQuotes) {
-          row.push(current.trim());
-          current = "";
-        } else if ((char === '\n' || char === '\r') && !inQuotes) {
-          if (current || row.length) {
-            row.push(current.trim());
-            rows.push(row);
-            row = [];
-            current = "";
-          }
-        } else {
-          current += char;
-        }
-      }
-      if (current || row.length) {
-        row.push(current.trim());
-        rows.push(row);
-      }
-      return rows;
-    }
-
-    async function loadDashboard() {
-      let csvText = null;
-      let lastError = null;
-
-      for (const url of possibleUrls) {
-        try {
-          const res = await fetch(url);
-          if (res.ok) {
-            csvText = await res.text();
-            if (csvText && csvText.length > 50) break;
-          }
-        } catch (e) {
-          lastError = e;
-        }
-      }
-
-      if (!csvText) {
-        document.getElementById("loading").style.display = "none";
-        document.getElementById("errorBox").style.display = "block";
-        document.getElementById("errorBox").textContent = 
-          "Could not load data. Please make sure the Google Sheet is set to 'Anyone with the link can view'.";
-        return;
-      }
-
-      try {
-        const rows = parseCSV(csvText);
-
-        // Find header row that contains "RC No"
-        let headerIndex = -1;
-        for (let i = 0; i < Math.min(rows.length, 30); i++) {
-          const rowStr = rows[i].join(" ").toLowerCase();
-          if (rowStr.includes("rc no") || rowStr.includes("rcno")) {
-            headerIndex = i;
-            break;
-          }
-        }
-
-        // Summary numbers (from known positions in original data)
-        // We keep the known values as fallback and try to extract if possible
-        let blocked = 68, released = 0, red = 9, ncr = 20;
-
-        // Try to find summary numbers in first rows
-        for (let i = 0; i < Math.min(rows.length, 15); i++) {
-          const row = rows[i];
-          for (let j = 0; j < row.length; j++) {
-            const val = row[j];
-            if (val === "68" || val === "Blocked") blocked = 68;
-            if (val === "0" && row[j-1] && row[j-1].toLowerCase().includes("released")) released = 0;
-          }
-        }
-
-        document.getElementById("blockedCount").textContent = blocked;
-        document.getElementById("releasedCount").textContent = released;
-        document.getElementById("redCount").textContent = red;
-        document.getElementById("ncrCount").textContent = ncr;
-
-        // Build table of blocked RCs
-        const tbody = document.getElementById("tableBody");
-        tbody.innerHTML = "";
-
-        if (headerIndex === -1) {
-          // Fallback: show first meaningful rows
-          document.getElementById("loading").style.display = "none";
-          document.getElementById("dataTable").style.display = "table";
-          
-          // Show a few sample rows from the data we know
-          const sampleData = [
-            ["RC-AERO-2605-146", "20-104483", "PO26645", "BLOCK - PRODUCTION INCOMPLETE", "PARTIAL", "REVIEW REQUIREMENT"],
-            ["RC-AERO-2605-147", "20-104483", "PO26645", "BLOCK - PRODUCTION INCOMPLETE", "PARTIAL", "REVIEW REQUIREMENT"],
-            ["RC-AERO-2607-338", "20-104483", "PO26645", "BLOCK - PRODUCTION INCOMPLETE", "PARTIAL", "MISSING"],
-            ["RC-AERO-2607-339", "20-104483", "PO26645", "BLOCK - PRODUCTION INCOMPLETE", "PARTIAL", "MISSING"],
-            ["RC-AERO-2607-340", "20-104355", "PO26645", "BLOCK - PRODUCTION INCOMPLETE", "PARTIAL", "MISSING"],
-            ["RC-AERO-2607-341", "20-104355", "PO26645", "BLOCK - PRODUCTION INCOMPLETE", "PARTIAL", "MISSING"],
-            ["RC-AERO-2607-342", "20-104356", "PO26645", "BLOCK - PRODUCTION INCOMPLETE", "PARTIAL", "MISSING"],
-            ["RC-AERO-2607-343", "20-104356", "PO26645", "BLOCK - PRODUCTION INCOMPLETE", "PARTIAL", "MISSING"],
-            ["RC-AERO-2607-366", "20-104483", "PO26645", "BLOCK - COC MISSING", "PARTIAL", "REVIEW REQUIREMENT"],
-            ["RC-AERO-2607-365", "20-104483", "PO26645", "BLOCK - PRODUCTION INCOMPLETE", "PARTIAL", "REVIEW REQUIREMENT"]
-          ];
-
-          sampleData.forEach(r => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-              <td><strong>${r[0]}</strong></td>
-              <td>${r[1]}</td>
-              <td>${r[2]}</td>
-              <td><span class="badge badge-block">${r[3]}</span></td>
-              <td><span class="badge badge-partial">${r[4]}</span></td>
-              <td>${r[5]}</td>
-            `;
-            tbody.appendChild(tr);
-          });
-          return;
-        }
-
-        // Real parsing when header found
-        const headers = rows[headerIndex].map(h => h.toLowerCase());
-        const rcIdx = headers.findIndex(h => h.includes("rc"));
-        const partIdx = headers.findIndex(h => h.includes("part"));
-        const poIdx = headers.findIndex(h => h.includes("po"));
-        const gateIdx = headers.findIndex(h => h.includes("gate") || h.includes("reason") || h.includes("final"));
-        const kpiIdx = headers.findIndex(h => h.includes("kpi") || h.includes("confidence"));
-        const fairIdx = headers.findIndex(h => h.includes("fair"));
-
-        let rowCount = 0;
-        for (let i = headerIndex + 1; i < rows.length; i++) {
-          const row = rows[i];
-          if (!row || row.length < 3) continue;
-          const rc = row[rcIdx] || row[0] || "";
-          if (!rc || !rc.toUpperCase().includes("RC-")) continue;
-
-          const tr = document.createElement("tr");
-          const gate = row[gateIdx] || row[3] || "";
-          const kpi = row[kpiIdx] || row[4] || "";
-          const fair = row[fairIdx] || row[5] || "";
-
-          tr.innerHTML = `
-            <td><strong>${rc}</strong></td>
-            <td>${row[partIdx] || row[1] || ""}</td>
-            <td>${row[poIdx] || row[2] || ""}</td>
-            <td><span class="badge badge-block">${gate}</span></td>
-            <td><span class="badge badge-partial">${kpi}</span></td>
-            <td>${fair}</td>
-          `;
-          tbody.appendChild(tr);
-          rowCount++;
-        }
-
-        document.getElementById("loading").style.display = "none";
-        if (rowCount === 0) {
-          document.getElementById("emptyMsg").style.display = "block";
-        } else {
-          document.getElementById("dataTable").style.display = "table";
-        }
-
-      } catch (err) {
-        document.getElementById("loading").style.display = "none";
-        document.getElementById("errorBox").style.display = "block";
-        document.getElementById("errorBox").textContent = "Error parsing data: " + err.message;
-      }
-    }
-
-    loadDashboard();
+        // Add active to clicked
+        btn.classList.add('active');
+        const pageId = btn.getAttribute('data-page');
+        document.getElementById(pageId).classList.add('active');
+      });
+    });
   </script>
 </body>
 </html>
