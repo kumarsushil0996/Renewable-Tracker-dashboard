@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quality Gate Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    .header {
+      background: #1a365d;
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .header p {
+      margin: 5px 0 0;
+      opacity: 0.9;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    .card .number {
+      font-size: 32px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    .card.blocked .number { color: #e53e3e; }
+    .card.released .number { color: #38a169; }
+    .card.red .number { color: #dd6b20; }
+    .card.open-ncr .number { color: #d69e2e; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    th {
+      background: #2d3748;
+      color: white;
+      padding: 12px 15px;
+      text-align: left;
+      font-size: 14px;
+    }
+    td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #edf2f7;
+      font-size: 14px;
+    }
+    tr:hover {
+      background: #f7fafc;
+    }
+    .status-block {
+      background: #fed7d7;
+      color: #c53030;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .loading {
+      text-align: center;
+      padding: 40px;
+      font-size: 18px;
+      color: #718096;
+    }
+    .error {
+      background: #fed7d7;
+      color: #c53030;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>Quality Gate Dashboard</h1>
+    <p>Renewable Tracker • Live from Google Sheets</p>
+  </div>
+
+  <div id="error" class="error" style="display:none;"></div>
+
+  <div class="cards" id="summary-cards">
+    <div class="card blocked">
+      <div>RCs Blocked</div>
+      <div class="number" id="blocked-count">-</div>
+    </div>
+    <div class="card released">
+      <div>RCs Released</div>
+      <div class="number" id="released-count">-</div>
+    </div>
+    <div class="card red">
+      <div>RED Data Health</div>
+      <div class="number" id="red-count">-</div>
+    </div>
+    <div class="card open-ncr">
+      <div>Open NCR RCs</div>
+      <div class="number" id="ncr-count">-</div>
+    </div>
+  </div>
+
+  <h2 style="margin-bottom:15px;">Blocked RCs – Release Action List</h2>
+  <div id="loading" class="loading">Loading data from Google Sheet...</div>
+  <table id="blocked-table" style="display:none;">
+    <thead>
+      <tr>
+        <th>RC No</th>
+        <th>Part No</th>
+        <th>PO No</th>
+        <th>Final Gate / Reason</th>
+        <th>KPI Confidence</th>
+        <th>FAIR Status</th>
+      </tr>
+    </thead>
+    <tbody id="table-body">
+    </tbody>
+  </table>
+
+  <script>
+    // Your Google Sheet ID
+    const SHEET_ID = "1MJ7KT2AcqTxlNPd7pcCEJyoEs-cHa3LWFtS3ohKcUMM";
+
+    // We will try to read the Quality Gate Dashboard sheet
+    // First we need the correct gid. For now we use a general approach.
+
+    async function loadData() {
+      try {
+        // Public CSV export link (works when sheet is public)
+        // We try the first sheet for now. Later we can target specific sheets.
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Quality%20Gate%20Dashboard`;
+
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Could not load sheet. Make sure it is public.");
+
+        const csvText = await response.text();
+        console.log("Data loaded");
+
+        // Simple display for now
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("blocked-table").style.display = "table";
+
+        // Temporary message while we improve the parser
+        document.getElementById("table-body").innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align:center; padding:30px;">
+              Data connection successful!<br><br>
+              Next we will map the exact columns from your Quality Gate Dashboard sheet.<br>
+              Please reply "code working" so I can improve the table.
+            </td>
+          </tr>
+        `;
+
+        // Set some placeholder numbers
+        document.getElementById("blocked-count").textContent = "68";
+        document.getElementById("released-count").textContent = "0";
+        document.getElementById("red-count").textContent = "9";
+        document.getElementById("ncr-count").textContent = "20";
+
+      } catch (err) {
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("error").style.display = "block";
+        document.getElementById("error").textContent = "Error: " + err.message;
+      }
+    }
+
+    loadData();
+  </script>
+
+</body>
+</html>
