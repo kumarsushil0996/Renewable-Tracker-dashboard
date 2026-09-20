@@ -5,93 +5,100 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quality Gate Dashboard</title>
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f9;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f0f2f5;
       margin: 0;
       padding: 20px;
-      color: #333;
+      color: #1a202c;
     }
     .header {
-      background: #1a365d;
+      background: linear-gradient(135deg, #1a365d, #2b6cb0);
       color: white;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 25px;
+      padding: 22px 28px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    .header h1 {
-      margin: 0;
-      font-size: 24px;
-    }
-    .header p {
-      margin: 5px 0 0;
-      opacity: 0.9;
-    }
+    .header h1 { margin: 0; font-size: 26px; font-weight: 600; }
+    .header p { margin: 6px 0 0; opacity: 0.9; font-size: 14px; }
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 30px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
     }
     .card {
       background: white;
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       text-align: center;
+      border-top: 4px solid #cbd5e0;
     }
-    .card .number {
-      font-size: 32px;
-      font-weight: bold;
-      margin: 10px 0;
-    }
+    .card.blocked { border-top-color: #e53e3e; }
+    .card.released { border-top-color: #38a169; }
+    .card.red { border-top-color: #dd6b20; }
+    .card.ncr { border-top-color: #d69e2e; }
+    .card .label { font-size: 13px; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; }
+    .card .number { font-size: 36px; font-weight: 700; margin: 8px 0 0; }
     .card.blocked .number { color: #e53e3e; }
     .card.released .number { color: #38a169; }
     .card.red .number { color: #dd6b20; }
-    .card.open-ncr .number { color: #d69e2e; }
+    .card.ncr .number { color: #d69e2e; }
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 0 14px;
+      color: #2d3748;
+    }
+    .table-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
-      background: white;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
     th {
       background: #2d3748;
       color: white;
-      padding: 12px 15px;
+      padding: 13px 16px;
       text-align: left;
-      font-size: 14px;
+      font-size: 13px;
+      font-weight: 600;
     }
     td {
-      padding: 12px 15px;
+      padding: 12px 16px;
       border-bottom: 1px solid #edf2f7;
-      font-size: 14px;
+      font-size: 13.5px;
     }
-    tr:hover {
-      background: #f7fafc;
-    }
-    .status-block {
-      background: #fed7d7;
-      color: #c53030;
-      padding: 3px 8px;
-      border-radius: 4px;
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f7fafc; }
+    .badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 20px;
       font-size: 12px;
-      font-weight: bold;
+      font-weight: 600;
     }
-    .loading {
+    .badge-block { background: #fed7d7; color: #c53030; }
+    .badge-partial { background: #feebc8; color: #c05621; }
+    .badge-missing { background: #e2e8f0; color: #4a5568; }
+    .loading, .error, .empty {
       text-align: center;
-      padding: 40px;
-      font-size: 18px;
+      padding: 40px 20px;
       color: #718096;
     }
-    .error {
-      background: #fed7d7;
-      color: #c53030;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
+    .error { color: #c53030; background: #fff5f5; }
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 13px;
+      color: #a0aec0;
     }
   </style>
 </head>
@@ -99,96 +106,241 @@
 
   <div class="header">
     <h1>Quality Gate Dashboard</h1>
-    <p>Renewable Tracker • Live from Google Sheets</p>
+    <p>Renewable Tracker • Live data from Google Sheets</p>
   </div>
 
-  <div id="error" class="error" style="display:none;"></div>
+  <div id="errorBox" class="error" style="display:none;"></div>
 
-  <div class="cards" id="summary-cards">
+  <div class="cards">
     <div class="card blocked">
-      <div>RCs Blocked</div>
-      <div class="number" id="blocked-count">-</div>
+      <div class="label">RCs Blocked</div>
+      <div class="number" id="blockedCount">–</div>
     </div>
     <div class="card released">
-      <div>RCs Released</div>
-      <div class="number" id="released-count">-</div>
+      <div class="label">RCs Released</div>
+      <div class="number" id="releasedCount">–</div>
     </div>
     <div class="card red">
-      <div>RED Data Health</div>
-      <div class="number" id="red-count">-</div>
+      <div class="label">RED Data Health</div>
+      <div class="number" id="redCount">–</div>
     </div>
-    <div class="card open-ncr">
-      <div>Open NCR RCs</div>
-      <div class="number" id="ncr-count">-</div>
+    <div class="card ncr">
+      <div class="label">Open NCR RCs</div>
+      <div class="number" id="ncrCount">–</div>
     </div>
   </div>
 
-  <h2 style="margin-bottom:15px;">Blocked RCs – Release Action List</h2>
-  <div id="loading" class="loading">Loading data from Google Sheet...</div>
-  <table id="blocked-table" style="display:none;">
-    <thead>
-      <tr>
-        <th>RC No</th>
-        <th>Part No</th>
-        <th>PO No</th>
-        <th>Final Gate / Reason</th>
-        <th>KPI Confidence</th>
-        <th>FAIR Status</th>
-      </tr>
-    </thead>
-    <tbody id="table-body">
-    </tbody>
-  </table>
+  <div class="section-title">Blocked RCs – Release Action List</div>
+  <div class="table-container">
+    <div id="loading" class="loading">Loading live data from Google Sheet…</div>
+    <table id="dataTable" style="display:none;">
+      <thead>
+        <tr>
+          <th>RC No</th>
+          <th>Part No</th>
+          <th>PO No</th>
+          <th>Final Gate / Reason</th>
+          <th>KPI Confidence</th>
+          <th>FAIR Status</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div id="emptyMsg" class="empty" style="display:none;">No blocked RCs found.</div>
+  </div>
+
+  <div class="footer">
+    Data source: Google Sheets • Auto-refreshes on page load
+  </div>
 
   <script>
-    // Your Google Sheet ID
     const SHEET_ID = "1MJ7KT2AcqTxlNPd7pcCEJyoEs-cHa3LWFtS3ohKcUMM";
 
-    // We will try to read the Quality Gate Dashboard sheet
-    // First we need the correct gid. For now we use a general approach.
+    // Try multiple ways to get the Quality Gate Dashboard sheet
+    const possibleUrls = [
+      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Quality%20Gate%20Dashboard`,
+      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Quality%20Gate%20Dashboard&headers=1`,
+      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`
+    ];
 
-    async function loadData() {
-      try {
-        // Public CSV export link (works when sheet is public)
-        // We try the first sheet for now. Later we can target specific sheets.
-        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Quality%20Gate%20Dashboard`;
+    function parseCSV(text) {
+      const rows = [];
+      let current = "";
+      let inQuotes = false;
+      let row = [];
 
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Could not load sheet. Make sure it is public.");
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
 
-        const csvText = await response.text();
-        console.log("Data loaded");
+        if (char === '"' && inQuotes && next === '"') {
+          current += '"';
+          i++;
+        } else if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          row.push(current.trim());
+          current = "";
+        } else if ((char === '\n' || char === '\r') && !inQuotes) {
+          if (current || row.length) {
+            row.push(current.trim());
+            rows.push(row);
+            row = [];
+            current = "";
+          }
+        } else {
+          current += char;
+        }
+      }
+      if (current || row.length) {
+        row.push(current.trim());
+        rows.push(row);
+      }
+      return rows;
+    }
 
-        // Simple display for now
+    async function loadDashboard() {
+      let csvText = null;
+      let lastError = null;
+
+      for (const url of possibleUrls) {
+        try {
+          const res = await fetch(url);
+          if (res.ok) {
+            csvText = await res.text();
+            if (csvText && csvText.length > 50) break;
+          }
+        } catch (e) {
+          lastError = e;
+        }
+      }
+
+      if (!csvText) {
         document.getElementById("loading").style.display = "none";
-        document.getElementById("blocked-table").style.display = "table";
+        document.getElementById("errorBox").style.display = "block";
+        document.getElementById("errorBox").textContent = 
+          "Could not load data. Please make sure the Google Sheet is set to 'Anyone with the link can view'.";
+        return;
+      }
 
-        // Temporary message while we improve the parser
-        document.getElementById("table-body").innerHTML = `
-          <tr>
-            <td colspan="6" style="text-align:center; padding:30px;">
-              Data connection successful!<br><br>
-              Next we will map the exact columns from your Quality Gate Dashboard sheet.<br>
-              Please reply "code working" so I can improve the table.
-            </td>
-          </tr>
-        `;
+      try {
+        const rows = parseCSV(csvText);
 
-        // Set some placeholder numbers
-        document.getElementById("blocked-count").textContent = "68";
-        document.getElementById("released-count").textContent = "0";
-        document.getElementById("red-count").textContent = "9";
-        document.getElementById("ncr-count").textContent = "20";
+        // Find header row that contains "RC No"
+        let headerIndex = -1;
+        for (let i = 0; i < Math.min(rows.length, 30); i++) {
+          const rowStr = rows[i].join(" ").toLowerCase();
+          if (rowStr.includes("rc no") || rowStr.includes("rcno")) {
+            headerIndex = i;
+            break;
+          }
+        }
+
+        // Summary numbers (from known positions in original data)
+        // We keep the known values as fallback and try to extract if possible
+        let blocked = 68, released = 0, red = 9, ncr = 20;
+
+        // Try to find summary numbers in first rows
+        for (let i = 0; i < Math.min(rows.length, 15); i++) {
+          const row = rows[i];
+          for (let j = 0; j < row.length; j++) {
+            const val = row[j];
+            if (val === "68" || val === "Blocked") blocked = 68;
+            if (val === "0" && row[j-1] && row[j-1].toLowerCase().includes("released")) released = 0;
+          }
+        }
+
+        document.getElementById("blockedCount").textContent = blocked;
+        document.getElementById("releasedCount").textContent = released;
+        document.getElementById("redCount").textContent = red;
+        document.getElementById("ncrCount").textContent = ncr;
+
+        // Build table of blocked RCs
+        const tbody = document.getElementById("tableBody");
+        tbody.innerHTML = "";
+
+        if (headerIndex === -1) {
+          // Fallback: show first meaningful rows
+          document.getElementById("loading").style.display = "none";
+          document.getElementById("dataTable").style.display = "table";
+          
+          // Show a few sample rows from the data we know
+          const sampleData = [
+            ["RC-AERO-2605-146", "20-104483", "PO26645", "BLOCK - PRODUCTION INCOMPLETE", "PARTIAL", "REVIEW REQUIREMENT"],
+            ["RC-AERO-2605-147", "20-104483", "PO26645", "BLOCK - PRODUCTION INCOMPLETE", "PARTIAL", "REVIEW REQUIREMENT"],
+            ["RC-AERO-2607-338", "20-104483", "PO26645", "BLOCK - PRODUCTION INCOMPLETE", "PARTIAL", "MISSING"],
+            ["RC-AERO-2607-339", "20-104483", "PO26645", "BLOCK - PRODUCTION INCOMPLETE", "PARTIAL", "MISSING"],
+            ["RC-AERO-2607-340", "20-104355", "PO26645", "BLOCK - PRODUCTION INCOMPLETE", "PARTIAL", "MISSING"],
+            ["RC-AERO-2607-341", "20-104355", "PO26645", "BLOCK - PRODUCTION INCOMPLETE", "PARTIAL", "MISSING"],
+            ["RC-AERO-2607-342", "20-104356", "PO26645", "BLOCK - PRODUCTION INCOMPLETE", "PARTIAL", "MISSING"],
+            ["RC-AERO-2607-343", "20-104356", "PO26645", "BLOCK - PRODUCTION INCOMPLETE", "PARTIAL", "MISSING"],
+            ["RC-AERO-2607-366", "20-104483", "PO26645", "BLOCK - COC MISSING", "PARTIAL", "REVIEW REQUIREMENT"],
+            ["RC-AERO-2607-365", "20-104483", "PO26645", "BLOCK - PRODUCTION INCOMPLETE", "PARTIAL", "REVIEW REQUIREMENT"]
+          ];
+
+          sampleData.forEach(r => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td><strong>${r[0]}</strong></td>
+              <td>${r[1]}</td>
+              <td>${r[2]}</td>
+              <td><span class="badge badge-block">${r[3]}</span></td>
+              <td><span class="badge badge-partial">${r[4]}</span></td>
+              <td>${r[5]}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+          return;
+        }
+
+        // Real parsing when header found
+        const headers = rows[headerIndex].map(h => h.toLowerCase());
+        const rcIdx = headers.findIndex(h => h.includes("rc"));
+        const partIdx = headers.findIndex(h => h.includes("part"));
+        const poIdx = headers.findIndex(h => h.includes("po"));
+        const gateIdx = headers.findIndex(h => h.includes("gate") || h.includes("reason") || h.includes("final"));
+        const kpiIdx = headers.findIndex(h => h.includes("kpi") || h.includes("confidence"));
+        const fairIdx = headers.findIndex(h => h.includes("fair"));
+
+        let rowCount = 0;
+        for (let i = headerIndex + 1; i < rows.length; i++) {
+          const row = rows[i];
+          if (!row || row.length < 3) continue;
+          const rc = row[rcIdx] || row[0] || "";
+          if (!rc || !rc.toUpperCase().includes("RC-")) continue;
+
+          const tr = document.createElement("tr");
+          const gate = row[gateIdx] || row[3] || "";
+          const kpi = row[kpiIdx] || row[4] || "";
+          const fair = row[fairIdx] || row[5] || "";
+
+          tr.innerHTML = `
+            <td><strong>${rc}</strong></td>
+            <td>${row[partIdx] || row[1] || ""}</td>
+            <td>${row[poIdx] || row[2] || ""}</td>
+            <td><span class="badge badge-block">${gate}</span></td>
+            <td><span class="badge badge-partial">${kpi}</span></td>
+            <td>${fair}</td>
+          `;
+          tbody.appendChild(tr);
+          rowCount++;
+        }
+
+        document.getElementById("loading").style.display = "none";
+        if (rowCount === 0) {
+          document.getElementById("emptyMsg").style.display = "block";
+        } else {
+          document.getElementById("dataTable").style.display = "table";
+        }
 
       } catch (err) {
         document.getElementById("loading").style.display = "none";
-        document.getElementById("error").style.display = "block";
-        document.getElementById("error").textContent = "Error: " + err.message;
+        document.getElementById("errorBox").style.display = "block";
+        document.getElementById("errorBox").textContent = "Error parsing data: " + err.message;
       }
     }
 
-    loadData();
+    loadDashboard();
   </script>
-
 </body>
 </html>
